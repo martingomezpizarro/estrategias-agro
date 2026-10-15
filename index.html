@@ -343,6 +343,78 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .sttbl th,.sttbl td{padding:4px 6px;text-align:right;border-top:1px solid rgba(32,34,12,.25)}
 .sttbl th:first-child,.sttbl td:first-child{text-align:left}
 .sttblwrap{max-height:220px;overflow:auto}
+
+/* ===== Modo foco: gráfico a pantalla completa con paneles laterales ===== */
+.expbtn{width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.22);color:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.expbtn svg{width:20px;height:20px}
+.skycard>.expbtn{position:absolute;top:14px;right:14px;z-index:2}
+.skycard .hero-num{padding-right:50px}
+body.focus-on{overflow:hidden}
+body.focus-on .tabbar,body.focus-on .appbar{visibility:hidden}
+.focus{position:fixed;inset:0;z-index:60;background:var(--bg);display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:minmax(0,1fr);overflow:hidden;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);overscroll-behavior:contain}
+.fside{width:290px;overflow-y:auto;padding:16px 14px 20px;display:flex;flex-direction:column;gap:14px;transition:margin .28s ease,opacity .2s ease,transform .28s ease;background:var(--bg);-webkit-overflow-scrolling:touch}
+.focus.noleft .fside.left{margin-left:-290px;opacity:0;pointer-events:none}
+.focus.noright .fside.right{margin-right:-290px;opacity:0;pointer-events:none}
+.fside>*{flex:none}
+.fside h4{margin:0;font:600 1.05rem var(--font-body);letter-spacing:-.01em;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.fside h4 small{font-size:.76rem;color:var(--faint);font-weight:500;text-align:right}
+.fside .grains{flex-wrap:wrap;overflow:visible}
+.fside .gpill{padding:3px 12px 3px 3px;font-size:.88rem}
+.fside .gpill img{width:28px;height:28px}
+.fside .rowi{padding:10px 12px;min-height:54px;gap:10px}
+.fside .rowi .main b{font-size:.94rem}
+.fside .rowi .main span{font-size:.78rem}
+.fside .rowi .side b{font-size:1rem}
+.fside .av{width:34px;height:34px;font-size:.74rem}
+.fside .check{width:20px;height:20px}
+.fside .summary{font-size:1.06rem}
+.ffield{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px}
+.ffield+.ffield{border-top:1px solid var(--line)}
+.ffield span{display:flex;flex-direction:column;line-height:1.2}
+.ffield span b{font-weight:500;font-size:.94rem}
+.ffield span small{font-size:.76rem;color:var(--faint)}
+.ffield input[type=number]{font:500 1.02rem var(--font-body);text-align:right;border:0;background:var(--surface2);color:var(--ink);border-radius:10px;padding:7px 9px;width:96px;min-height:40px;font-variant-numeric:tabular-nums}
+.ffield.col{flex-direction:column;align-items:stretch;gap:6px}
+.ffield.col .top{display:flex;justify-content:space-between;align-items:baseline}
+.ffield input[type=range]{width:100%;accent-color:var(--gold)}
+.fcenter{margin:10px;border-radius:24px!important;padding:12px 18px 12px!important;display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0}
+.ftop{display:flex;align-items:flex-start;gap:10px}
+.ftop .hero-num{flex:1;min-width:0;padding:0 4px!important;gap:2px}
+.ftop .hero-num .big{font-size:clamp(2rem,4.4vw,3.2rem)}
+.ftop .hero-num .lead{font-size:.9rem}
+.ftop .hero-num .delta{font-size:.92rem}
+.ftgl{height:42px;border-radius:999px;border:0;background:rgba(255,255,255,.22);color:#fff;font:600 .86rem var(--font-body);padding:0 14px 0 10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;flex:none}
+.ftgl svg{width:20px;height:20px}
+.ftgl[aria-pressed="true"]{background:rgba(255,255,255,.4)}
+.fchart{flex:1;min-height:0;margin-inline:-18px;touch-action:none;position:relative}
+.fchart svg{display:block;width:100%;height:100%;cursor:crosshair}
+.fchart text{fill:var(--faint);font:500 15px var(--font-body)}
+.fbot{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.fbot .segs{flex:1;min-width:280px;max-width:520px}
+.fbot .legend{color:rgba(255,255,255,.85)}
+.fscrim{display:none}
+.frotate{display:none}
+/* Tablet en vertical o pantalla angosta: paneles como cajones */
+@media (max-width:899px),(orientation:portrait){
+  .fside{position:absolute;top:0;bottom:0;z-index:4;width:min(320px,86vw);background:var(--surface);box-shadow:0 0 40px rgba(0,0,0,.25);padding-top:calc(16px + env(safe-area-inset-top,0px))}
+  .fside.left{left:0} .fside.right{right:0}
+  .focus.noleft .fside.left{margin-left:0;transform:translateX(-105%)}
+  .focus.noright .fside.right{margin-right:0;transform:translateX(105%)}
+  .focus:not(.noleft) .fscrim,.focus:not(.noright) .fscrim{display:block;position:absolute;inset:0;z-index:3;background:rgba(0,0,0,.35)}
+  .ftgl .lbl{display:none}
+  .ftgl{padding:0;width:42px;justify-content:center}
+}
+/* Pedido de giro: solo en vertical, hasta que el usuario elija seguir así */
+@media (orientation:portrait){
+  .focus:not(.portrait-ok) .frotate{display:flex;position:absolute;inset:0;z-index:6;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px;text-align:center}
+}
+.frotate h2{font-family:var(--font-display);font-size:2rem;letter-spacing:-.02em}
+.frotate p{color:var(--muted);max-width:32ch}
+.frotate svg{width:84px;height:84px;color:var(--gold);animation:frot 2.4s ease-in-out infinite}
+@keyframes frot{0%,25%{transform:rotate(0)}50%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+@media (prefers-reduced-motion:reduce){.frotate svg{animation:none}.fside{transition:none}}
+
 .stnote{font-size:.85rem;color:#20220C;background:var(--surface2);padding:12px 14px;border-left:3px solid #20220C}
 </style>
 
@@ -376,6 +448,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
   <p class="pstat" id="pStat"></p>
 
   <div class="sec skycard" style="gap:14px">
+    <button class="expbtn" id="expBtn" aria-label="Agrandar el gráfico a pantalla completa" title="Pantalla completa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></button>
     <div class="hero-num">
       <span class="lead" id="heroLead"></span>
       <span class="big" id="heroBig"></span>
@@ -582,6 +655,56 @@ Put  = e^(−rT) · [ K·N(−d2) − F·N(−d1) ]</div>
   <button class="btn" id="qClose">Cerrar</button>
 </div>
 
+<!-- ================= MODO FOCO ================= -->
+<div class="focus noleft noright" id="focus" hidden role="dialog" aria-modal="true" aria-label="Gráfico a pantalla completa">
+  <aside class="fside left" id="fLeft" aria-label="Estrategias">
+    <h4>Cultivo</h4>
+    <div class="grains" id="fCrops" role="group" aria-label="Cultivo"></div>
+    <h4>Estrategia <small id="fEstrCount"></small></h4>
+    <div class="list" id="fEstr"></div>
+    <p class="note" id="fDesc"></p>
+  </aside>
+  <div class="fcenter skycard">
+    <div class="ftop">
+      <button class="ftgl" id="fTglL" aria-pressed="false" aria-controls="fLeft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg><span class="lbl">Estrategias</span></button>
+      <div class="hero-num">
+        <span class="lead" id="fLead"></span>
+        <span class="big" id="fBig"></span>
+        <span class="delta" id="fDelta"></span>
+      </div>
+      <button class="ftgl" id="fTglR" aria-pressed="false" aria-controls="fRight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></svg><span class="lbl">Números</span></button>
+      <button class="expbtn" id="fClose" aria-label="Salir de pantalla completa" title="Salir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg></button>
+    </div>
+    <div class="fchart" id="fChart"></div>
+    <div class="fbot">
+      <div class="segs" id="fSegs"></div>
+      <div class="legend">
+        <span><i style="background:var(--hedge)"></i>Con la estrategia</span>
+        <span><i style="background:rgba(255,255,255,.75)"></i>Sin cobertura</span>
+        <span><i style="background:var(--bad)"></i>Tu costo</span>
+      </div>
+    </div>
+  </div>
+  <aside class="fside right" id="fRight" aria-label="Números de la simulación">
+    <h4>Tu campo <small id="fPos"></small></h4>
+    <div class="list">
+      <label class="ffield" for="fHa"><span><b>Hectáreas</b><small>Superficie sembrada</small></span><input id="fHa" type="number" inputmode="decimal" min="1"></label>
+      <label class="ffield" for="fRinde"><span><b>Rinde</b><small>qq por ha</small></span><input id="fRinde" type="number" inputmode="decimal" min="1"></label>
+      <label class="ffield" for="fCosto"><span><b>Costo total</b><small>USD por ha</small></span><input id="fCosto" type="number" inputmode="decimal" min="0"></label>
+      <div class="ffield col"><div class="top"><label for="fCob"><b style="font-weight:500;font-size:.94rem">Porcentaje a cubrir</b></label><b class="num" id="fCobVal" style="font-size:1.1rem"></b></div><input id="fCob" type="range" min="0" max="100" step="5"></div>
+    </div>
+    <div class="soft"><p class="summary" id="fSummary"></p></div>
+    <div class="list" id="fKpis"></div>
+  </aside>
+  <div class="fscrim" id="fScrim"></div>
+  <div class="frotate">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>
+    <h2>Girá la tablet</h2>
+    <p>El gráfico se ve completo en horizontal, con las estrategias a un lado y tus números al otro.</p>
+    <button class="btn" id="fPortrait">Seguir en vertical</button>
+  </div>
+</div>
+
 <script>
 /* ---------- Configuración pública ---------- */
 const CONFIG = {
@@ -697,7 +820,7 @@ function kpisHTML(a,c){
 
 /* ---------- Gráfico ---------- */
 function renderChart(el,legs,c,opt){
-  const W=720,H=320,pt=34,pb=40, prod=S.rinde/10, cov=S.cob/100;
+  const W=opt.W||720,H=opt.H||320,pt=34,pb=40, prod=S.rinde/10, cov=S.cob/100;
   const x0=c.F*0.6,x1=c.F*1.4,N=120,xs=[];for(let i=0;i<=N;i++)xs.push(x0+(x1-x0)*i/N);
   const val=opt.mode==="eff"?(x=>effPrice(legs,x,c)):(x=>prod*((1-cov)*x+cov*effPrice(legs,x,c)));
   const base=opt.mode==="eff"?(x=>x):(x=>prod*x);
@@ -728,33 +851,106 @@ function renderChart(el,legs,c,opt){
 }
 
 /* ---------- Simulador ---------- */
+function fillHero(ids,P,a,c){
+  const inc=a.inc(P), noh=a.prod*P, dTot=(inc-noh)*S.ha, m=inc-S.costo;
+  $(ids[0]).textContent=`Si a cosecha la ${c.nombre.toLowerCase()} vale ${usd(P)}/t, cobrás`;
+  $(ids[1]).innerHTML=`${usd(inc)}<small>por ha</small>`;
+  $(ids[2]).innerHTML=`<span class="${dTot>=0?"pos":"neg"}">${dTot>=0?"▲":"▼"} ${usd(Math.abs(dTot))} vs sin cubrir</span> <span class="faint">·</span> <span class="${m>=0?"pos":"neg"}">margen ${sgn(m)}/ha</span>`;
+}
+const segsHTML=()=>[-30,-15,0,15,30].map(p=>`<button data-scen="${p}" aria-pressed="${S.scrub==null&&S.scen===p}">${p===0?"Hoy":(p>0?"+":"−")+Math.abs(p)+"%"}</button>`).join("");
+const estrDescOf=legs=>PRESETS[S.estr]?PRESETS[S.estr].desc:"Estrategia guardada: "+legs.map(legLabel).join(" + ");
 function renderSim(){
   const c=crop(), legs=legsOf(S.estr), a=analyze(legs,c);
   const P=S.scrub ?? c.F*(1+S.scen/100);
-  const inc=a.inc(P), noh=a.prod*P, dTot=(inc-noh)*S.ha, m=inc-S.costo;
-  $("heroLead").textContent=`Si a cosecha la ${c.nombre.toLowerCase()} vale ${usd(P)}/t, cobrás`;
-  $("heroBig").innerHTML=`${usd(inc)}<small>por ha</small>`;
-  $("heroDelta").innerHTML=`<span class="${dTot>=0?"pos":"neg"}">${dTot>=0?"▲":"▼"} ${usd(Math.abs(dTot))} vs sin cubrir</span> <span class="faint">·</span> <span class="${m>=0?"pos":"neg"}">margen ${sgn(m)}/ha</span>`;
+  if(FOCUS){ renderFocus(c,legs,a,P); return }
+  fillHero(["heroLead","heroBig","heroDelta"],P,a,c);
   renderChart($("chart"),legs,c,{P,mode:"ha",onScrub:x=>{S.scrub=x;renderSim()}});
-  $("segs").innerHTML=[-30,-15,0,15,30].map(p=>`<button data-scen="${p}" aria-pressed="${S.scrub==null&&S.scen===p}">${p===0?"Hoy":(p>0?"+":"−")+Math.abs(p)+"%"}</button>`).join("");
+  $("segs").innerHTML=segsHTML();
   if(S.scrub!=null) return;
   $("cropPos").textContent=`${c.pos} · vence ${new Date(c.venc+"T12:00:00").toLocaleDateString("es-AR",{day:"numeric",month:"short",year:"numeric"})}`;
   $("cobVal").textContent=S.cob+"%";
   $("summary").innerHTML=summaryText(a,c,legs);
-  $("estrDesc").textContent=PRESETS[S.estr]?PRESETS[S.estr].desc:"Estrategia guardada: "+legs.map(legLabel).join(" + ");
+  $("estrDesc").textContent=estrDescOf(legs);
   $("kpis").innerHTML=kpisHTML(a,c);
   renderChips(); renderCta();
 }
 function legLabel(l){const c=crop();return (l.side===1?"Compra ":"Venta ")+(l.k==="fut"?"futuro":l.k+" "+strikeOf(l,c))+(l.q!==1?` ×${fmt(l.q,2)}`:"")}
-function renderChips(){
-  const prodMode=document.body.classList.contains("prod"), c=crop();
+function chipItems(){
+  const prodMode=document.body.classList.contains("prod");
   const items=Object.entries(PRESETS).map(([id,p])=>({id,b:p.nombre,s:p.corto,ini:p.ini}));
   if(!prodMode) saved.forEach(s=>items.push({id:s.id,b:s.nombre,s:s.legs.map(legLabel).join(" + "),ini:"★"}));
-  $("estrCount").textContent=items.length+" disponibles";
-  $("chips").innerHTML=items.map(i=>{
+  return items;
+}
+function chipsHTML(items){
+  const c=crop();
+  return items.map(i=>{
     const a=analyze(legsOf(i.id),c), down=a.e(c.F*0.8);
     return `<button class="rowi" data-estr="${i.id}" aria-pressed="${i.id===S.estr}"><span class="av">${i.ini}</span><span class="main"><b>${i.b}</b><span>${i.s}</span></span><span class="side"><b>${usd(down)}</b><span class="faint">si cae 20%</span></span><span class="check"></span></button>`;
   }).join("");
+}
+function renderChips(){
+  const items=chipItems();
+  $("estrCount").textContent=items.length+" disponibles";
+  $("chips").innerHTML=chipsHTML(items);
+}
+const cropPillsHTML=()=>Object.entries(MKT.crops).map(([id,c])=>`<button class="gpill" data-crop="${id}" aria-pressed="${id===S.crop}"><img src="${IMG[id]}" alt="">${c.nombre} <small>${fmt(c.F)}</small></button>`).join("");
+
+/* ---------- Modo foco ---------- */
+let FOCUS=false, fsEntered=false;
+function renderFocus(c,legs,a,P){
+  fillHero(["fLead","fBig","fDelta"],P,a,c);
+  const box=$("fChart"), W=Math.max(320,Math.round(box.clientWidth)), H=Math.max(200,Math.round(box.clientHeight));
+  renderChart(box,legs,c,{P,mode:"ha",W,H,onScrub:x=>{S.scrub=x;renderSim()}});
+  $("fSegs").innerHTML=segsHTML();
+  if(S.scrub!=null) return;
+  $("fCrops").innerHTML=cropPillsHTML();
+  const items=chipItems();
+  $("fEstrCount").textContent=items.length+" disponibles";
+  $("fEstr").innerHTML=chipsHTML(items);
+  $("fDesc").textContent=estrDescOf(legs);
+  $("fPos").textContent=c.pos;
+  $("fCobVal").textContent=S.cob+"%";
+  $("fSummary").innerHTML=summaryText(a,c,legs);
+  $("fKpis").innerHTML=kpisHTML(a,c);
+}
+function syncFocusToggles(){
+  const f=$("focus");
+  $("fTglL").setAttribute("aria-pressed",!f.classList.contains("noleft"));
+  $("fTglR").setAttribute("aria-pressed",!f.classList.contains("noright"));
+}
+const isWideLandscape=()=>matchMedia("(min-width:900px) and (orientation:landscape)").matches;
+async function openFocus(){
+  if(FOCUS) return;
+  FOCUS=true; S.scrub=null;
+  const f=$("focus"); f.hidden=false; f.classList.remove("portrait-ok");
+  document.body.classList.add("focus-on");
+  const wide=isWideLandscape();
+  f.classList.toggle("noleft",!wide); f.classList.toggle("noright",!wide);
+  syncFocusToggles(); syncInputs();
+  requestAnimationFrame(renderSim);
+  try{
+    const el=document.documentElement, rq=el.requestFullscreen||el.webkitRequestFullscreen;
+    if(rq && !(document.fullscreenElement||document.webkitFullscreenElement)){ await rq.call(el); fsEntered=true }
+  }catch(e){}
+  try{ if(screen.orientation&&screen.orientation.lock) await screen.orientation.lock("landscape") }catch(e){}
+  requestAnimationFrame(renderSim);
+}
+function closeFocus(){
+  if(!FOCUS) return;
+  FOCUS=false; $("focus").hidden=true; document.body.classList.remove("focus-on");
+  try{ if(screen.orientation&&screen.orientation.unlock) screen.orientation.unlock() }catch(e){}
+  if(fsEntered && (document.fullscreenElement||document.webkitFullscreenElement)){
+    fsEntered=false;
+    try{ const p=(document.exitFullscreen||document.webkitExitFullscreen).call(document); if(p&&p.catch) p.catch(()=>{}) }catch(e){}
+  }
+  fsEntered=false; S.scrub=null; syncInputs(); renderCropSeg(); renderSim();
+}
+function toggleSide(side){
+  const f=$("focus"), cls=side==="left"?"noleft":"noright";
+  const opening=f.classList.contains(cls);
+  if(opening && !isWideLandscape()) f.classList.add("noleft","noright"); // en vertical, un cajón por vez
+  f.classList.toggle(cls,!opening);
+  syncFocusToggles();
 }
 function renderCta(){
   const c=crop(), btns=[];
@@ -766,9 +962,13 @@ function renderCta(){
 }
 function renderCropSeg(){
   document.body.dataset.grain=S.crop;
-  $("cropSeg").innerHTML=Object.entries(MKT.crops).map(([id,c])=>`<button class="gpill" data-crop="${id}" aria-pressed="${id===S.crop}"><img src="${IMG[id]}" alt="">${c.nombre} <small>${fmt(c.F)}</small></button>`).join("");
+  $("cropSeg").innerHTML=cropPillsHTML();
 }
-function syncInputs(){ $("inHa").value=S.ha; $("inRinde").value=S.rinde; $("inCosto").value=S.costo; $("inCob").value=S.cob }
+function syncInputs(){
+  const set=(id,v)=>{const el=$(id); if(el&&el!==document.activeElement) el.value=v};
+  set("inHa",S.ha);set("inRinde",S.rinde);set("inCosto",S.costo);set("inCob",S.cob);
+  set("fHa",S.ha);set("fRinde",S.rinde);set("fCosto",S.costo);set("fCob",S.cob);
+}
 
 /* ---------- Armar ---------- */
 let bScrub=null;
@@ -1165,6 +1365,27 @@ $("themeBtn").onclick=()=>{const t=document.documentElement.dataset.theme==="dar
 ["inHa","inRinde","inCosto","inCob"].forEach(id=>$(id).addEventListener("input",()=>{
   S.ha=Math.max(+$("inHa").value||0,0);S.rinde=Math.max(+$("inRinde").value||0,0.1);S.costo=Math.max(+$("inCosto").value||0,0);S.cob=+$("inCob").value;renderSim();
 }));
+["fHa","fRinde","fCosto","fCob"].forEach(id=>$(id).addEventListener("input",()=>{
+  S.ha=Math.max(+$("fHa").value||0,0);S.rinde=Math.max(+$("fRinde").value||0,0.1);S.costo=Math.max(+$("fCosto").value||0,0);S.cob=+$("fCob").value;S.scrub=null;syncInputs();renderSim();
+}));
+$("expBtn").onclick=openFocus;
+$("fClose").onclick=closeFocus;
+$("fTglL").onclick=()=>toggleSide("left");
+$("fTglR").onclick=()=>toggleSide("right");
+$("fScrim").onclick=()=>{$("focus").classList.add("noleft","noright");syncFocusToggles()};
+$("fPortrait").onclick=()=>{$("focus").classList.add("portrait-ok");requestAnimationFrame(renderSim)};
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&FOCUS) closeFocus() });
+["fullscreenchange","webkitfullscreenchange"].forEach(ev=>document.addEventListener(ev,()=>{
+  if(!(document.fullscreenElement||document.webkitFullscreenElement) && fsEntered && FOCUS){ fsEntered=false; closeFocus() }
+}));
+let fRaf=0;
+const fReflow=()=>{ if(!FOCUS) return; cancelAnimationFrame(fRaf); fRaf=requestAnimationFrame(renderSim) };
+if(window.ResizeObserver) new ResizeObserver(fReflow).observe($("fChart"));
+window.addEventListener("resize",fReflow);
+window.addEventListener("orientationchange",()=>setTimeout(()=>{
+  if(!FOCUS) return; const f=$("focus"), wide=isWideLandscape();
+  f.classList.toggle("noleft",!wide); f.classList.toggle("noright",!wide); syncFocusToggles(); fReflow();
+},250));
 $("legsTbl").addEventListener("change",e=>{
   const el=e.target,l=S.builder[+el.dataset.i],c=crop(); if(!l) return;
   if(el.dataset.f==="side")l.side=+el.value;
