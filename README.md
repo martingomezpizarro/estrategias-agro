@@ -16,6 +16,8 @@ Sitio estático, sin compilación:
 | `manifest.webmanifest`, `icon*.{svg,png}` | Instalable en tablet y celular (PWA) |
 | `sw.js` | Guarda la app en el dispositivo para usarla sin señal en el stand |
 | `CNAME` | Dominio propio para GitHub Pages |
+| `pie-config.js` | Datos del pie de página: autor, mail, links de colaboración, fechas, fuentes y descargos que aplican |
+| `pie.js` | Pie institucional reutilizable (el mismo en todos los proyectos) y modal de "Términos y condiciones de uso" (`#terminos`, `#privacidad`) |
 
 ## Correrlo en la compu
 
@@ -30,4 +32,4 @@ La app busca `api/precios` o `precios.json` (y `api/estadisticas` o `estadistica
 
 ## Publicar cambios
 
-Cualquier cambio que se suba a `main` se publica solo en el subdominio en uno o dos minutos. Si cambiás `index.html`, subí también la versión en `sw.js` (`agro-v1` → `agro-v2`) para que las tablets que ya la instalaron tomen la nueva.
+Cualquier cambio que se suba a `main` se publica solo en el subdominio en uno o dos minutos. Si cambiás `index.html`, `pie.js` o `pie-config.js`, subí también la versión en `sw.js` (`agro-v1` → `agro-v2`) para que las tablets que ya la instalaron tomen la nueva.

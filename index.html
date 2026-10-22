@@ -415,6 +415,11 @@ body.focus-on .tabbar,body.focus-on .appbar{visibility:hidden}
 @keyframes frot{0%,25%{transform:rotate(0)}50%,85%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
 @media (prefers-reduced-motion:reduce){.frotate svg{animation:none}.fside{transition:none}}
 
+/* pie institucional: la app deja poco aire abajo y el pie reserva el lugar de la barra de pestañas */
+.app{padding-bottom:32px}
+body.prod .app{padding-bottom:24px}
+#pie{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+body.prod #pie{padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
 .stnote{font-size:.85rem;color:#20220C;background:var(--surface2);padding:12px 14px;border-left:3px solid #20220C}
 </style>
 
@@ -505,7 +510,6 @@ body.focus-on .tabbar,body.focus-on .appbar{visibility:hidden}
   </div>
 
   <p class="disc" id="disc"></p>
-  <p class="disc">Una herramienta de <a href="https://martingomezpizarro.com.ar" target="_blank" rel="noopener" style="color:inherit">martingomezpizarro.com.ar</a></p>
 </section>
 
 <!-- ================= ARMAR ================= -->
@@ -638,6 +642,9 @@ Put  = e^(−rT) · [ K·N(−d2) − F·N(−d1) ]</div>
   <button class="btn block prod-only" data-tab="sim" style="justify-content:center">Volver al simulador</button>
 </section>
 </main>
+
+<!-- ================= PIE INSTITUCIONAL (pie.js + pie-config.js) ================= -->
+<footer id="pie"></footer>
 
 <nav class="tabbar adv-only" id="tabs" aria-label="Secciones">
   <button data-tab="sim" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l5-5 4 4 9-9"/><path d="M15 7h6v6"/></svg>Simulador</button>
@@ -1087,6 +1094,7 @@ function applyLive(j){
   return true;
 }
 function priceStatus(){
+  if(window.Pie) Pie.refresh();
   const el=$("pStat"); if(!el) return;
   if(LIVE&&!isManual()){
     const d=new Date(LIVE.fecha); const t=isNaN(d)?"":d.toLocaleString("es-AR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
@@ -1430,6 +1438,8 @@ $("disc").textContent="Simulación ilustrativa con precios de referencia. No con
   if(window.claude&&window.claude.use) window.claude.use("downloads").then(d=>{if(d)DL=d}).catch(()=>{});
 })();
 </script>
+<script src="pie-config.js"></script>
+<script src="pie.js"></script>
 <script>if("serviceWorker" in navigator&&location.protocol==="https:")addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body>
 </html>
