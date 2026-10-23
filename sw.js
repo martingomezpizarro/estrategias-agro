@@ -1,6 +1,6 @@
-// Estrategias Agro — funciona sin señal en el stand.
-const CACHE = "agro-v1";
-const CORE = ["./", "index.html", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png"];
+// Agro y Mercado — funciona sin señal en el stand.
+const CACHE = "agro-v2";
+const CORE = ["./", "index.html", "manifest.webmanifest", "favicon.png", "logo.png", "icon-192.png", "icon-512.png"];
 const CDN = [
   "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js",
   "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
@@ -19,6 +19,8 @@ self.addEventListener("fetch", e => {
   const url = new URL(req.url);
   // precios y estadísticas: siempre red primero, sin guardar
   if (/\/(api\/|precios\.json|estadisticas\.json)/.test(url.pathname)) return;
+  // el panel de administración no se guarda ni se sirve sin conexión (lo protege Cloudflare Access)
+  if (url.pathname.startsWith("/admin")) return;
   // la página: red primero (para ver cambios), caché si no hay señal
   if (req.mode === "navigate") {
     e.respondWith(fetch(req).then(r => { const c = r.clone(); caches.open(CACHE).then(k => k.put("./", c)); return r; }).catch(() => caches.match("./")));
