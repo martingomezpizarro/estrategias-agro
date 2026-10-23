@@ -15,6 +15,7 @@ Sitio estático, sin compilación:
 | `index.html` | Toda la app (HTML, estilos y lógica en un solo archivo) |
 | `admin/index.html` | La misma app con los QR del stand y la configuración de links. Protegida con Cloudflare Access (solo el administrador) |
 | `logo.png`, `favicon.png` | Logo y favicon |
+| `logo-mono.png`, `logo-mono-blanco.png` | Logo a un color (verde y blanco) para sellos, impresiones y fondos con foto |
 | `manifest.webmanifest`, `icon-*.png` | Instalable en tablet y celular (PWA) |
 | `sw.js` | Guarda la app en el dispositivo para usarla sin señal en el stand |
 | `CNAME` | Dominio propio para GitHub Pages |
