@@ -599,6 +599,38 @@ details.cfg[open]{padding-bottom:14px}
 .hero::before{z-index:1!important;background:linear-gradient(180deg,rgba(28,36,20,.9) 0%,rgba(28,36,20,.82) 55%,rgba(28,36,20,.72) 100%)!important}
 .hero-in{z-index:2!important}
 @media (min-width:760px){.hero{background:#1C2414}.hero>img.heroimg{left:auto;width:60%;object-position:50% 60%}.hero::before{background:linear-gradient(90deg,#1C2414 40%,rgba(28,36,20,.82) 55%,rgba(28,36,20,.25) 80%,rgba(28,36,20,.1) 100%)!important}}
+
+/* ===== Pantallas anchas: aprovechar toda la computadora ===== */
+.cols{display:flex;flex-direction:column;gap:28px}
+.colL,.colR{display:flex;flex-direction:column;gap:28px;min-width:0}
+.colL>*,.colR>*{margin-top:0!important}
+@media (min-width:1000px){
+  .app,.appbar-in,.topnav,.hero-in{max-width:1240px}
+  .app{padding-inline:32px}
+  .appbar-in,.topnav{padding-inline:32px}
+  .hero-in{padding:56px 32px 60px;gap:20px}
+  .hero-in>h1,.hero-in>.lede,.hero-in>.tension,.hero-in>.eyebrow{max-width:680px}
+  .hero-in>.hsteps{max-width:900px}
+  .hero{min-height:520px;display:flex;align-items:center}
+  .hero-in{width:100%}
+  .topnav{grid-template-columns:repeat(3,minmax(0,260px));justify-content:start}
+  .flow .intro,.probe .intro,.contactsec .intro{max-width:70ch}
+  .photo{min-height:280px}
+  .opps{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .stats6{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .toolsel{max-width:900px}
+  .cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:36px;align-items:start}
+  .colL{position:sticky;top:132px}
+  #stBody{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:36px;row-gap:22px;align-items:start}
+  #stBody>.photo,#stBody>.stgrid,#stBody>.stnote,#stBody>.disc{grid-column:1/-1}
+  .contactsec .cgrid,.contactsec .steps3{max-width:1000px}
+  .cform{max-width:760px}
+  #v-qr{display:none}
+  body.admin #v-qr{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+  body.admin #v-qr>:not(.card){grid-column:1/-1}
+  .sitefoot{max-width:1240px}
+}
+@media (min-width:1500px){.app,.appbar-in,.topnav,.hero-in{max-width:1360px}}
 /* formulario de contacto */
 .cform{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:14px;scroll-margin-top:140px}
 .cform h3{font:700 1.35rem var(--font-display)}
@@ -2210,6 +2242,21 @@ function a3Live(){
   }) };
 }
 
+
+/* ---------- Diseño en columnas para computadora ---------- */
+function splitCols(root){
+  if(!root||root.dataset.split) return; root.dataset.split="1";
+  const L=document.createElement("div"); L.className="colL";
+  const R=document.createElement("div"); R.className="colR";
+  const wrap=document.createElement("div"); wrap.className="cols";
+  [...root.children].forEach(k=>{
+    if(k.classList.contains("grains")||k.classList.contains("tsub")||k.classList.contains("banner")||k.classList.contains("ltitle")||k.classList.contains("pstat")||k.id==="tGranos"||k.id==="tDolar") return;
+    (k.classList.contains("skycard")||k.classList.contains("soft")?L:R).appendChild(k);
+  });
+  if(!L.children.length){ [...R.children].forEach(k=>root.appendChild(k)); return }
+  wrap.append(L,R); root.appendChild(wrap);
+}
+["v-sim","v-fin","v-build","tGranos","tDolar"].forEach(id=>splitCols(document.getElementById(id)));
 /* ---------- Inicio ---------- */
 $("disc").textContent="Simulación ilustrativa con precios de referencia. No constituye recomendación de inversión. Las primas son teóricas (Black-76) y deben confirmarse con la cotización de A3. No incluye diferencias de base entre el futuro y el precio de venta del grano, ni impuestos. La operatoria con derivados implica riesgos y requiere cuenta comitente en una ALyC miembro de A3 y evaluación de perfil de inversor.";
 (function init(){

@@ -1,5 +1,5 @@
 // Agro y Mercado — funciona sin señal en el stand.
-const CACHE = "agro-v2";
+const CACHE = "agro-v3";
 const CORE = ["./", "index.html", "manifest.webmanifest", "favicon.png", "logo.png", "icon-192.png", "icon-512.png"];
 const CDN = [
   "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js",
