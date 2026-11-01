@@ -29,7 +29,11 @@ python3 -m http.server 8000
 
 ## Precios en vivo
 
-Los futuros de soja, maíz y trigo, el dólar futuro, el A3500 y la caución se leen de la pantalla pública A3 Live (A3 Mercados) cada 5 minutos. No es una API documentada para terceros: si deja de responder, la app usa los cierres que trae incorporados y lo indica. Los márgenes de garantía son los de Argentina Clearing (Comunicación N° 563, 09/10/2026): actualizarlos en `MARG` cuando cambien.
+Los futuros de soja, maíz y trigo, el dólar futuro, el A3500 y la caución se leen de la pantalla pública A3 Live (A3 Mercados) cada 5 minutos. No es una API documentada para terceros: si deja de responder, la app usa los cierres que trae incorporados y lo indica. **Primas de opciones.** A3 Live no publica opciones. La app toma primas de mercado por contrato desde `primas.json` (o del campo `primas` de `api/precios`, si se conecta un Worker con Primary API), con el formato `{"primasFecha": "2026-11-02T17:00:00-03:00", "primas": {"SOJ.ROS/MAY27 352 P": 15.4}}`. Las de más de 4 días se descartan. Si un contrato no tiene prima de mercado, se estima con Black-76 usando el vencimiento de la opción, y la app lo indica. Los strikes se redondean a los listados por A3 (cada 4 USD/t).
+
+**Unidades.** Todo el simulador trabaja en toneladas: rinde en t/ha, costo en USD por tonelada producida, resultados en USD/t y totales en USD.
+
+Los márgenes de garantía son los de Argentina Clearing (Comunicación N° 563, 09/10/2026): actualizarlos en `MARG` cuando cambien.
 
 ## Panel de administración
 

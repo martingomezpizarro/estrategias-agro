@@ -1,5 +1,5 @@
 // Agro y Mercado — funciona sin señal en el stand.
-const CACHE = "agro-v3";
+const CACHE = "agro-v4";
 const CORE = ["./", "index.html", "manifest.webmanifest", "favicon.png", "logo.png", "icon-192.png", "icon-512.png"];
 const CDN = [
   "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js",
@@ -18,7 +18,7 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   // precios y estadísticas: siempre red primero, sin guardar
-  if (/\/(api\/|precios\.json|estadisticas\.json)/.test(url.pathname)) return;
+  if (/\/(api\/|precios\.json|primas\.json|estadisticas\.json)/.test(url.pathname)) return;
   // el panel de administración no se guarda ni se sirve sin conexión (lo protege Cloudflare Access)
   if (url.pathname.startsWith("/admin")) return;
   // la página: red primero (para ver cambios), caché si no hay señal
