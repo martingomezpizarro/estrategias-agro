@@ -146,10 +146,20 @@ def a3500(fechas):
     if not fechas:
         return {}
     d1, d2 = min(fechas), max(fechas)
-    url = f"https://api.bcra.gob.ar/estadisticas/v3.0/monetarias/5?desde={d1}&hasta={d2}"
-    j = json.loads(get(url))
+    j, err = None, None
+    for v in ("v4.0", "v3.0"):
+        try:
+            j = json.loads(get(f"https://api.bcra.gob.ar/estadisticas/{v}/monetarias/5?desde={d1}&hasta={d2}"))
+            break
+        except Exception as e:
+            err = e
+    if j is None:
+        raise err
     res = {}
-    for x in j.get("results", []):
+    results = j.get("results", [])
+    if isinstance(results, dict):
+        results = [results]
+    for x in results:
         if isinstance(x, dict) and "fecha" in x and "valor" in x:
             res[x["fecha"][:10]] = float(x["valor"])
         for y in (x.get("detalle") or []) if isinstance(x, dict) else []:

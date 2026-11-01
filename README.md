@@ -35,6 +35,19 @@ Los futuros de soja, maíz y trigo, el dólar futuro, el A3500 y la caución se 
 
 Los márgenes de garantía son los de Argentina Clearing (Comunicación N° 563, 09/10/2026): actualizarlos en `MARG` cuando cambien.
 
+## Datos que se actualizan solos
+
+El workflow `.github/workflows/datos.yml` corre `scripts/actualizar_datos.py` cada hora en días hábiles y guarda en `datos/`:
+
+- `tasas.json`: tasas del MAV del último día operado (cheques electrónicos avalados en pesos por plazo y pagarés avalados en dólares), promedio ponderado por monto.
+- `spot.json`: precios pizarra de la Cámara Arbitral de Rosario (BCR), el disponible que se paga por operaciones reales.
+
+Si una fuente falla, quedan los datos anteriores. Se puede correr a mano desde la pestaña Actions → "Actualizar datos de mercado" → Run workflow.
+
+**Estado de los precios de A3.** Con la rueda abierta (días hábiles de 10 a 17) la app dice "En vivo"; fuera de horario muestra el ajuste y dice "Cierre del" último día hábil. Los feriados están en `FERIADOS` dentro de `index.html`: actualizarlos cada año.
+
+**Fuentes.** Cada número tiene una (i) con la fuente y la fecha. Si se agrega un dato, agregarle su (i).
+
 ## Panel de administración
 
 `/admin` muestra los QR y la configuración de links. Para que solo entre el administrador, `agro.martingomezpizarro.com.ar/admin*` se protege con Cloudflare Access (política: solo gomezpizarromartin@gmail.com). Si cambiás `index.html`, copiá el mismo archivo a `admin/index.html` cambiando las rutas de íconos, manifest y `sw.js` a `../`.
