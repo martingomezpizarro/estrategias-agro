@@ -2,166 +2,166 @@
  "fuente": "Cámara Arbitral de Cereales, Bolsa de Comercio de Rosario (precios pizarra)",
  "url": "https://www.bcr.com.ar/es/mercados/mercado-de-granos/cotizaciones/cotizaciones-locales-0",
  "nota": "Pesos por tonelada. Promedio ponderado de operaciones del mercado físico de Rosario. En dólares, al A3500 del BCRA de cada fecha.",
- "actualizado": "2026-10-31T23:05-03:00",
+ "actualizado": "2026-10-31T23:09-03:00",
  "granos": {
   "soja": [
    {
     "fecha": "2026-10-29",
     "ars": null,
-    "a3500": null,
+    "a3500": 1539.593,
     "usd": null
    },
    {
     "fecha": "2026-10-28",
-    "ars": 550000,
-    "a3500": null,
-    "usd": null
+    "ars": 550000.0,
+    "a3500": 1538.4739,
+    "usd": 357.5
    },
    {
     "fecha": "2026-10-27",
-    "ars": 550000,
-    "a3500": null,
-    "usd": null
+    "ars": 550000.0,
+    "a3500": 1538.741,
+    "usd": 357.4
    },
    {
     "fecha": "2026-10-26",
-    "ars": 555000,
-    "a3500": null,
-    "usd": null
+    "ars": 555000.0,
+    "a3500": 1540.4751,
+    "usd": 360.3
    },
    {
     "fecha": "2026-10-23",
-    "ars": 555000,
-    "a3500": null,
-    "usd": null
-   }
-  ],
-  "maiz": [
-   {
-    "fecha": "2026-10-29",
-    "ars": 275400,
-    "a3500": null,
-    "usd": null
-   },
-   {
-    "fecha": "2026-10-28",
-    "ars": 277800,
-    "a3500": null,
-    "usd": null
-   },
-   {
-    "fecha": "2026-10-27",
-    "ars": 280500,
-    "a3500": null,
-    "usd": null
-   },
-   {
-    "fecha": "2026-10-26",
-    "ars": 281000,
-    "a3500": null,
-    "usd": null
-   },
-   {
-    "fecha": "2026-10-23",
-    "ars": 278250,
-    "a3500": null,
-    "usd": null
-   }
-  ],
-  "trigo": [
-   {
-    "fecha": "2026-10-29",
-    "ars": 311000,
-    "a3500": null,
-    "usd": null
-   },
-   {
-    "fecha": "2026-10-28",
-    "ars": 317300,
-    "a3500": null,
-    "usd": null
-   },
-   {
-    "fecha": "2026-10-27",
-    "ars": 323000,
-    "a3500": null,
-    "usd": null
-   },
-   {
-    "fecha": "2026-10-26",
-    "ars": 326000,
-    "a3500": null,
-    "usd": null
-   },
-   {
-    "fecha": "2026-10-23",
-    "ars": 326900,
-    "a3500": null,
-    "usd": null
-   }
-  ],
-  "girasol": [
-   {
-    "fecha": "2026-10-29",
-    "ars": null,
-    "a3500": null,
-    "usd": null
-   },
-   {
-    "fecha": "2026-10-28",
-    "ars": null,
-    "a3500": null,
-    "usd": null
-   },
-   {
-    "fecha": "2026-10-27",
-    "ars": null,
-    "a3500": null,
-    "usd": null
-   },
-   {
-    "fecha": "2026-10-26",
-    "ars": null,
-    "a3500": null,
-    "usd": null
-   },
-   {
-    "fecha": "2026-10-23",
-    "ars": null,
-    "a3500": null,
-    "usd": null
+    "ars": 555000.0,
+    "a3500": 1528.263,
+    "usd": 363.2
    }
   ],
   "sorgo": [
    {
     "fecha": "2026-10-29",
     "ars": null,
-    "a3500": null,
+    "a3500": 1539.593,
     "usd": null
    },
    {
     "fecha": "2026-10-28",
     "ars": null,
-    "a3500": null,
+    "a3500": 1538.4739,
     "usd": null
    },
    {
     "fecha": "2026-10-27",
-    "ars": 285900,
-    "a3500": null,
+    "ars": 285900.0,
+    "a3500": 1538.741,
+    "usd": 185.8
+   },
+   {
+    "fecha": "2026-10-26",
+    "ars": 291100.0,
+    "a3500": 1540.4751,
+    "usd": 189.0
+   },
+   {
+    "fecha": "2026-10-23",
+    "ars": 288900.0,
+    "a3500": 1528.263,
+    "usd": 189.0
+   }
+  ],
+  "girasol": [
+   {
+    "fecha": "2026-10-29",
+    "ars": null,
+    "a3500": 1539.593,
+    "usd": null
+   },
+   {
+    "fecha": "2026-10-28",
+    "ars": null,
+    "a3500": 1538.4739,
+    "usd": null
+   },
+   {
+    "fecha": "2026-10-27",
+    "ars": null,
+    "a3500": 1538.741,
     "usd": null
    },
    {
     "fecha": "2026-10-26",
-    "ars": 291100,
-    "a3500": null,
+    "ars": null,
+    "a3500": 1540.4751,
     "usd": null
    },
    {
     "fecha": "2026-10-23",
-    "ars": 288900,
-    "a3500": null,
+    "ars": null,
+    "a3500": 1528.263,
     "usd": null
+   }
+  ],
+  "trigo": [
+   {
+    "fecha": "2026-10-29",
+    "ars": 311000.0,
+    "a3500": 1539.593,
+    "usd": 202.0
+   },
+   {
+    "fecha": "2026-10-28",
+    "ars": 317300.0,
+    "a3500": 1538.4739,
+    "usd": 206.2
+   },
+   {
+    "fecha": "2026-10-27",
+    "ars": 323000.0,
+    "a3500": 1538.741,
+    "usd": 209.9
+   },
+   {
+    "fecha": "2026-10-26",
+    "ars": 326000.0,
+    "a3500": 1540.4751,
+    "usd": 211.6
+   },
+   {
+    "fecha": "2026-10-23",
+    "ars": 326900.0,
+    "a3500": 1528.263,
+    "usd": 213.9
+   }
+  ],
+  "maiz": [
+   {
+    "fecha": "2026-10-29",
+    "ars": 275400.0,
+    "a3500": 1539.593,
+    "usd": 178.9
+   },
+   {
+    "fecha": "2026-10-28",
+    "ars": 277800.0,
+    "a3500": 1538.4739,
+    "usd": 180.6
+   },
+   {
+    "fecha": "2026-10-27",
+    "ars": 280500.0,
+    "a3500": 1538.741,
+    "usd": 182.3
+   },
+   {
+    "fecha": "2026-10-26",
+    "ars": 281000.0,
+    "a3500": 1540.4751,
+    "usd": 182.4
+   },
+   {
+    "fecha": "2026-10-23",
+    "ars": 278250.0,
+    "a3500": 1528.263,
+    "usd": 182.1
    }
   ]
  }
