@@ -12,7 +12,9 @@
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.hero-num .lead .today{display:block;font-size:.82rem;color:var(--faint);margin-bottom:4px}
+.hero-num .lead b{color:var(--ink);font-weight:600}
+</style>
 </head>
 <body>
 <title>Agro y Mercado</title>
@@ -209,9 +211,9 @@ button.rowi{cursor:pointer}
 .skycard::before{content:"";position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(0deg,rgba(203,145,91,.2),rgba(203,145,91,0));pointer-events:none}
 .skycard>*{position:relative}
 .skycard .chartwrap{margin-inline:-20px}
-.skycard .segs button{color:rgba(255,255,255,.8)}
+.skycard .segs button{color:var(--muted)}
 .skycard .segs button[aria-pressed="true"]{background:rgba(255,255,255,.25);color:#fff}
-.skycard .legend{color:rgba(255,255,255,.85)}
+.skycard .legend{color:var(--muted)}
 .gpill[aria-pressed="true"]{background:var(--accent)!important;color:var(--accent-ink)!important;border-color:var(--accent)!important}
 .gpill[aria-pressed="true"] small{color:rgba(46,31,24,.7)!important}
 .rowi[aria-pressed="true"] .check{background:var(--gold)!important;border-color:var(--gold)!important}
@@ -375,7 +377,7 @@ body.focus-on .tabbar,body.focus-on .appbar{visibility:hidden}
 .fchart text{fill:var(--faint);font:500 15px var(--font-body)}
 .fbot{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .fbot .segs{flex:1;min-width:280px;max-width:520px}
-.fbot .legend{color:rgba(255,255,255,.85)}
+.fbot .legend{color:var(--muted)}
 .fscrim{display:none}
 .frotate{display:none}
 /* Tablet en vertical o pantalla angosta: paneles como cajones */
@@ -876,7 +878,7 @@ body.focus-on .ticker,body.focus-on .tkshow{display:none}
     <div class="segs" id="segs"></div>
     <div class="legend">
       <span><i style="background:var(--hedge)"></i>Con la estrategia</span>
-      <span><i style="background:rgba(255,255,255,.75)"></i>Sin cobertura</span>
+      <span><i style="background:var(--faint)"></i>Sin cobertura</span>
       <span><i style="background:var(--bad)"></i>Tu costo</span>
     </div>
   </div>
@@ -1258,7 +1260,7 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
       <div class="segs" id="fSegs"></div>
       <div class="legend">
         <span><i style="background:var(--hedge)"></i>Con la estrategia</span>
-        <span><i style="background:rgba(255,255,255,.75)"></i>Sin cobertura</span>
+        <span><i style="background:var(--faint)"></i>Sin cobertura</span>
         <span><i style="background:var(--bad)"></i>Tu costo</span>
       </div>
     </div>
@@ -1439,7 +1441,7 @@ function renderChart(el,legs,c,opt){
     <path d="${path(noh)}" fill="none" stroke="var(--faint)" stroke-width="3" stroke-dasharray="7 7"/>
     <path d="${path(wh)}" fill="none" stroke="var(--hedge)" stroke-width="5" stroke-linejoin="round"/>
     <line x1="${X(c.F)}" x2="${X(c.F)}" y1="${pt-14}" y2="${H-pb}" stroke="var(--grain)" stroke-width="1" stroke-dasharray="3 4"/>
-    <text x="${X(c.F)}" y="${pt-12}" text-anchor="middle" style="fill:var(--grain);font-weight:600">hoy ${fmt(c.F)}</text>
+    <text x="${X(c.F)}" y="${pt-12}" text-anchor="middle" style="fill:var(--grain);font-weight:600">hoy ${c.tk?c.tk.split("/")[1]:"futuro"}: ${fmt(c.F,1)}</text>
     <line x1="${X(P)}" x2="${X(P)}" y1="${pt}" y2="${H-pb}" stroke="var(--ink)" stroke-width="1" opacity=".35"/>
     <circle cx="${X(P)}" cy="${pn}" r="5" fill="var(--bg)" stroke="var(--faint)" stroke-width="2"/>
     <circle cx="${X(P)}" cy="${py}" r="9" fill="var(--hedge)" stroke="var(--bg)" stroke-width="4"/>
@@ -1456,7 +1458,10 @@ function renderChart(el,legs,c,opt){
 /* ---------- Simulador ---------- */
 function fillHero(ids,P,a,c){
   const inc=a.inc(P), dTot=(inc-P)*a.total, m=inc-S.costo;
-  $(ids[0]).textContent=`Si a cosecha ${c.pos} vale ${usd(P)}/t, cobrás en promedio`;
+  const sp=typeof spotOf==="function"?spotOf(S.crop):null, dP=(P/c.F-1)*100;
+  const rel=Math.abs(dP)<0.5?"igual que hoy":`${dP>0?"+":"−"}${fmt(Math.abs(dP),0)}% vs hoy`;
+  $(ids[0]).innerHTML=`<span class="today">Hoy en A3: ${c.pos} (${c.tk}) <b>${usd(c.F,1)}/t</b>${sp?` · disponible Rosario ${usd(sp.usd,0)}/t`:""}</span>`
+    +`Si a cosecha vale <b>${usd(P)}/t</b> (${rel}), cobrás en promedio por toda tu cosecha, con la prima descontada:`;
   $(ids[1]).innerHTML=`${usd(inc)}<small>por t</small>`;
   $(ids[2]).innerHTML=`<span class="${dTot>=0?"pos":"neg"}">${dTot>=0?"▲":"▼"} ${usd(Math.abs(dTot))} vs sin cubrir</span> <span class="faint">·</span> <span class="${m>=0?"pos":"neg"}">margen ${sgn(m)}/t</span>`;
 }
