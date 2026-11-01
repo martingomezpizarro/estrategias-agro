@@ -188,6 +188,58 @@ def build_spot(page):
     }
 
 
+# ---------------- Parámetros para estimar primas (Black-76) ----------------
+# Contrato de Chicago más parecido a la posición de A3 que usa el simulador (mismo cultivo, mes igual o siguiente).
+# Al cambiar de campaña en la app (A3COS en index.html), actualizar acá también.
+CBOT = {"soja": ("ZSK27.CBT", "ZS=F", "Soja mayo 2027 (ZSK27)"),
+        "maiz": ("ZCK27.CBT", "ZC=F", "Maíz mayo 2027 (ZCK27)"),
+        "trigo": ("ZWH27.CBT", "ZW=F", "Trigo marzo 2027 (ZWH27)")}
+VENTANA = 60  # ruedas
+
+
+def yahoo_daily(sym):
+    j = json.loads(get(f"https://query1.finance.yahoo.com/v8/finance/chart/{sym}?range=1y&interval=1d"))
+    r = j["chart"]["result"][0]
+    return [(t, c) for t, c in zip(r["timestamp"], r["indicators"]["quote"][0]["close"]) if c]
+
+
+def realized_vol(px, continuo):
+    import math
+    rets = [math.log(b[1] / a[1]) for a, b in zip(px, px[1:])]
+    if continuo:  # el contrato continuo salta al cambiar de vencimiento: descartar saltos de más de 6%
+        rets = [x for x in rets if abs(x) < 0.06]
+    rets = rets[-VENTANA:]
+    if len(rets) < 30:
+        raise ValueError("pocos datos")
+    m = sum(rets) / len(rets)
+    var = sum((x - m) ** 2 for x in rets) / (len(rets) - 1)
+    return math.sqrt(var * 252) * 100
+
+
+def build_params():
+    out = {"actualizado": dt.datetime.now(ART).isoformat(timespec="minutes"), "vol": {}}
+    for g, (sym, cont, nombre) in CBOT.items():
+        for s_, continuo in ((sym, False), (cont, True)):
+            try:
+                px = yahoo_daily(s_)
+                v = realized_vol(px, continuo)
+                out["vol"][g] = {"valor": round(v, 1), "contrato": nombre if not continuo else f"{nombre.split(' (')[0]}, contrato continuo ({cont})",
+                                 "fecha": dt.datetime.fromtimestamp(px[-1][0], ART).date().isoformat(), "ventana": VENTANA,
+                                 "fuente": "CME Group vía Yahoo Finance: volatilidad histórica anualizada de los últimos 60 cierres diarios"}
+                break
+            except Exception as e:
+                print(f"vol {g} {s_}: {e}", file=sys.stderr)
+    try:  # Tasa libre de riesgo en dólares: letras del Tesoro de EE.UU. a 13 semanas
+        px = yahoo_daily("^IRX")
+        out["r"] = {"valor": round(px[-1][1], 2), "fecha": dt.datetime.fromtimestamp(px[-1][0], ART).date().isoformat(),
+                    "fuente": "Rendimiento de las letras del Tesoro de EE.UU. a 13 semanas (^IRX, CBOE vía Yahoo Finance)"}
+    except Exception as e:
+        print("tasa ^IRX:", e, file=sys.stderr)
+    if not out["vol"] and "r" not in out:
+        raise ValueError("sin parámetros")
+    return out
+
+
 def save(name, data):
     os.makedirs(OUT, exist_ok=True)
     p = os.path.join(OUT, name)
@@ -212,6 +264,11 @@ def main():
     except Exception as e:
         ok = False
         print("MAV falló:", e, file=sys.stderr)
+    try:
+        save("parametros.json", build_params())
+    except Exception as e:
+        ok = False
+        print("Parámetros fallaron:", e, file=sys.stderr)
     try:
         save("spot.json", build_spot(get("https://www.bcr.com.ar/es/mercados/mercado-de-granos/cotizaciones/cotizaciones-locales-0")))
     except Exception as e:
