@@ -13,6 +13,7 @@ Sitio estático, sin compilación:
 | Archivo | Para qué |
 |---|---|
 | `index.html` | Toda la app (HTML, estilos y lógica en un solo archivo) |
+| `agentes.json` | Agentes y sus datos de contacto: cada link `?a=<identificador>` muestra los del agente correspondiente |
 | `admin/index.html` | La misma app con los QR del stand y la configuración de links. Protegida con Cloudflare Access (solo el administrador) |
 | `logo.png`, `favicon.png` | Logo y favicon |
 | `logo-mono.png`, `logo-mono-blanco.png` | Logo a un color (verde y blanco) para sellos, impresiones y fondos con foto |
@@ -53,6 +54,14 @@ Además, `.github/workflows/estadisticas.yml` corre los lunes `scripts/actualiza
 ## Panel de administración
 
 `/admin` muestra los QR y la configuración de links. Para que solo entre el administrador, `agro.martingomezpizarro.com.ar/admin*` se protege con Cloudflare Access (política: solo gomezpizarromartin@gmail.com). Si cambiás `index.html`, copiá el mismo archivo a `admin/index.html` cambiando las rutas de íconos, manifest y `sw.js` a `../`.
+
+## Agentes y links por agente
+
+La página puede compartirse con otros agentes productores. Cada uno tiene su link, por ejemplo `agro.martingomezpizarro.com.ar/?a=juan-perez`: quien entra por ahí ve el nombre, WhatsApp, mail, ALyC y link de apertura de ese agente, y el formulario de contacto le escribe a él. El dispositivo recuerda el último agente con el que entró, así que si el productor vuelve sin el link sigue viendo al mismo. Un identificador que no existe o un agente inactivo muestran al predeterminado (`predeterminado` en `agentes.json`).
+
+Los agentes se administran desde `/admin` → "Agentes y links": agregar, editar, desactivar o quitar, copiar el link de cada uno y "Armar QR" para que los tres QR y sus PDF salgan con los datos de ese agente. Los cambios quedan en el dispositivo hasta tocar "Publicar en la página", que guarda `agentes.json` en `main` con la API de GitHub usando un token fine-grained ("Contents: read and write" solo en este repositorio) que queda guardado únicamente en ese dispositivo. Sin token, "Descargar agentes.json" y subirlo a mano.
+
+La autoría del pie de página sigue siendo la del autor de la plataforma.
 
 ## Publicar cambios
 

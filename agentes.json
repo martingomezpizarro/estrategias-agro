@@ -1,0 +1,14 @@
+{
+  "predeterminado": "martin",
+  "agentes": {
+    "martin": {
+      "nombre": "Martín Gómez Pizarro",
+      "rol": "Agente productor · Mercado de capitales",
+      "whatsapp": "5493517862123",
+      "mail": "gomezpizarromartin@gmail.com",
+      "alyc": "AVSA",
+      "cuentaURL": "https://aperturas.avsa.com.ar/?advisor_alias=GONZALO_GOMEZPIZARRO",
+      "activo": true
+    }
+  }
+}
