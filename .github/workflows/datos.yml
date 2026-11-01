@@ -1,0 +1,31 @@
+name: Actualizar datos de mercado
+# Tasas del MAV y precios pizarra de Rosario, en días hábiles.
+on:
+  schedule:
+    - cron: "23 13-22 * * 1-5"   # cada hora, de 10:23 a 19:23 (hora argentina)
+    - cron: "47 0 * * 2-6"       # 21:47, para tomar la pizarra que la BCR publica tarde
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: datos
+  cancel-in-progress: false
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Bajar datos
+        run: python scripts/actualizar_datos.py || echo "alguna fuente falló; se conservan los datos anteriores"
+      - name: Guardar si cambió
+        run: |
+          if [ -n "$(git status --porcelain datos)" ]; then
+            git config user.name "agro-datos[bot]"
+            git config user.email "agro-datos@users.noreply.github.com"
+            git add datos
+            git commit -m "Datos de mercado: $(TZ=America/Argentina/Buenos_Aires date '+%d/%m %H:%M')"
+            git push
+          fi
