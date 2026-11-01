@@ -1144,10 +1144,10 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
   <div class="sec" style="gap:4px"><h1 class="ltitle">Mercado</h1><p class="faint" id="mktDate"></p></div>
   <div id="mboard" class="mboard"></div>
   <details class="sec mparams">
-    <summary><b>Parámetros del simulador</b><span>precio, volatilidad y vencimiento que usa la app; editables</span></summary>
+    <summary><b>Parámetros del simulador</b><span>se completan solos: futuro de A3, volatilidad de Chicago, tasa del Tesoro de EE.UU. y vencimientos de A3; podés cambiarlos</span></summary>
     <div id="board" class="sec" style="gap:16px"></div>
     <div class="list">
-      <label class="rowi" for="mR"><span class="main"><b>Tasa en USD</b><span>% anual, para descontar primas</span></span><input id="mR" type="number" step="0.1"></label>
+      <label class="rowi" for="mR"><span class="main"><b>Tasa en USD <span id="mRI"></span></b><span id="mRS">% anual, para descontar primas</span></span><input id="mR" type="number" step="0.1"></label>
       <label class="rowi" for="mOp"><span class="main"><b>Costo operativo</b><span>USD por tonelada y por pata</span></span><input id="mOp" type="number" step="0.1"></label>
       <label class="rowi" for="mFecha"><span class="main"><b>Fecha de precios</b><span>Último ajuste cargado</span></span><input id="mFecha" type="date"></label>
     </div>
@@ -1507,7 +1507,7 @@ function summaryText(a,c,legs){
 function kpisHTML(a,c){
   const premTot=a.premNet*a.tons, ct=a.tons>0?Math.max(1,Math.round(a.tons/100)):0, legs=a.legs||[];
   const opts=legs.filter(l=>l.k!=="fut"), srcs=[...new Set(opts.map(l=>premSrc(l,c)))];
-  const srcLbl=!srcs.length?"":srcs.length>1?"primas de mercado A3 y estimadas":srcs[0]==="a3"?`de mercado A3${MKT.primasInfo?" · "+MKT.primasInfo:""}`:srcs[0]==="manual"?"cargada a mano":"estimada (Black-76), sin cotización A3";
+  const srcLbl=!srcs.length?"":srcs.length>1?"primas de mercado A3 y estimadas":srcs[0]==="a3"?`de mercado A3${MKT.primasInfo?" · "+MKT.primasInfo:""}`:srcs[0]==="manual"?"cargada a mano":"estimada con Black-76 (A3 no publica opciones) "+I(`Prima estimada con Black-76: futuro ${c.tk} ${fmt(c.F,1)} USD/t, vencimiento de la opción ${dmy(c.ov)}. ${volInfo(S.crop)} ${rInfo()}`);
   const row=(ini,t,s,v,vs,cls="")=>`<div class="rowi"><div class="av">${ini}</div><div class="main"><b>${t}</b><span>${s}</span></div><div class="side"><b class="${cls}">${v}</b><span class="faint">${vs}</span></div></div>`;
   return (legs.length?row("A3","Contratos",legs.map(l=>(l.side===1?"compra ":"venta ")+tkOf(l,c)).join(" · "),c.tk.split("/")[1],"Rosario",""):"")
    + row("t","Toneladas cubiertas",`${S.cob}% de ${fmt(a.total)} t`,`${fmt(a.tons)} t`,`≈ ${ct} contrato${ct===1?"":"s"} de 100 t`)
@@ -1735,18 +1735,21 @@ function renderBoard(){
     const u=TASAS.pagareUsdAvalado; if(u) h+=`<tr><td class="l">Pagaré avalado en USD</td><td class="n">varios</td><td class="n v">${fmt(u.tasa,1)}%</td><td class="n"><small>MAV · ${dmy(TASAS.fecha)}</small></td></tr>`; }
   h+=`</tbody></table></div>`+src(`Caución: A3. Cheques y pagarés: MAV, promedio ponderado por monto de las operaciones avaladas por SGR del último día.`,`Las tasas del MAV las baja un proceso automático cada hora en días hábiles desde mav-sa.com.ar. Son tasas nominales anuales.`,"https://mav-sa.com.ar/");
   // Opciones
-  h+=`<div class="mbhead"><b>Opciones · primas en USD/t</b><span class="mbbadge">${Object.keys(MKT.primas).length?"A3 donde hay cotización":"estimadas (Black-76): falta conexión de opciones con A3"}</span></div><div class="mbopts">`;
+  h+=`<div class="mbhead"><b>Opciones · primas en USD/t</b><span class="mbbadge">${Object.keys(MKT.primas).length?"A3 donde hay cotización":"estimadas con Black-76 y volatilidad de Chicago"}</span></div><div class="mbopts">`;
   Object.entries(MKT.crops).forEach(([id,c])=>{
     const k0=Math.round(c.F/KSTEP)*KSTEP, ks=[-3,-2,-1,0,1,2,3].map(i=>k0+i*KSTEP);
     const pr=(k,t)=>{const m=MKT.primas[`${c.tk} ${k} ${t}`]; return m>0?`<td class="n v">${fmt(m,1)}</td>`:`<td class="n est">${fmt(b76(t==="C"?"call":"put",c.F,k,c.vol/100,yearsTo(c),MKT.r/100).price,1)}</td>`};
-    h+=`<div class="mbtbl"><table><thead><tr><th>Call</th><th class="c">${c.tk} <small>vence ${dmy(c.ov)}</small></th><th>Put</th></tr></thead><tbody>${ks.map(k=>`<tr${k===k0?' class="sel"':""}>${pr(k,"C")}<td class="c">${k}</td>${pr(k,"P")}</tr>`).join("")}</tbody></table></div>`;
+    h+=`<div class="mbtbl"><table><thead><tr><th>Call</th><th class="c">${c.tk} <small>vence ${dmy(c.ov)} · vol ${fmt(c.vol,1)}%</small></th><th>Put</th></tr></thead><tbody>${ks.map(k=>`<tr${k===k0?' class="sel"':""}>${pr(k,"C")}<td class="c">${k}</td>${pr(k,"P")}</tr>`).join("")}</tbody></table></div>`;
   });
-  h+=`</div>`+src(`Primas: en blanco, cotización de A3; en gris, estimadas con Black-76 (volatilidad editable en parámetros).`,`A3 Live no publica opciones. Las primas de mercado se cargan cuando hay una fuente de A3 conectada (Primary API). Mientras tanto se estiman con Black-76 usando el futuro, la volatilidad, la tasa en USD y el vencimiento de la opción.`);
+  h+=`</div>`+src(`Primas: en blanco, cotización de A3; en gris, estimadas con Black-76 (futuro de A3, volatilidad histórica de Chicago, tasa del Tesoro de EE.UU. a 13 semanas y vencimiento de la opción en A3).`,`A3 Live no publica opciones. Mientras no haya primas de A3 conectadas, se estiman con Black-76. ${["soja","maiz","trigo"].map(volInfo).join(" ")} ${rInfo()} La volatilidad histórica de Chicago es una aproximación: la implícita de A3 puede ser distinta.`);
   el.innerHTML=h;
 }
 function renderMkt(){
   renderBoard();
   $("mR").value=MKT.r; $("mOp").value=MKT.costOp; $("mFecha").value=MKT.fecha;
+  const rAuto=PARAMS&&PARAMS.r&&!PMAN.r&&!isManual();
+  $("mRS").textContent=rAuto?`% anual · automática: letras del Tesoro de EE.UU. a 13 semanas, ${dmy(PARAMS.r.fecha)}`:"% anual, cargada a mano";
+  $("mRI").innerHTML=I(rInfo());
   $("mktDate").textContent=a3Label()+" · USD por tonelada";
   $("board").innerHTML=Object.entries(MKT.crops).map(([id,c])=>{
     const k0=Math.round(c.F/KSTEP)*KSTEP, ks=[-3,-2,-1,0,1,2,3].map(i=>k0+i*KSTEP);
@@ -1755,12 +1758,9 @@ function renderMkt(){
       <div class="rowi quote" style="padding:0;min-height:0"><span class="av" style="width:48px;height:48px"><img src="${IMG[id]}" alt=""></span><span class="main"><b>${c.nombre}</b><span>${c.pos}</span></span><span class="big">${fmt(c.F)}</span></div>
       <div class="list">
         <label class="rowi" for="mF_${id}"><span class="main"><b>Futuro</b><span>Último ajuste A3</span></span><input id="mF_${id}" data-c="${id}" data-f="F" type="number" step="0.5" value="${c.F}"></label>
-        <label class="rowi" for="mV_${id}"><span class="main"><b>Volatilidad</b><span>% anual</span></span><input id="mV_${id}" data-c="${id}" data-f="vol" type="number" step="0.5" value="${c.vol}"></label>
+        <label class="rowi" for="mV_${id}"><span class="main"><b>Volatilidad ${I(volInfo(id))}</b><span>${PARAMS&&PARAMS.vol&&PARAMS.vol[id]&&!PMAN[id]&&!isManual()?`% anual · automática: ${PARAMS.vol[id].contrato}, últimas 60 ruedas`:"% anual, cargada a mano"}</span></span><input id="mV_${id}" data-c="${id}" data-f="vol" type="number" step="0.5" value="${c.vol}"></label>
         <label class="rowi" for="mP_${id}"><span class="main"><b>Posición</b></span><input id="mP_${id}" data-c="${id}" data-f="pos" type="text" value="${c.pos}"></label>
         <label class="rowi" for="mD_${id}"><span class="main"><b>Vencimiento</b></span><input id="mD_${id}" data-c="${id}" data-f="venc" type="date" value="${c.venc}"></label>
-        <div class="rowi col"><span class="faint" style="font-size:.84rem">Opciones ${c.tk}, vencen ${new Date(c.ov+"T12:00:00").toLocaleDateString("es-AR",{day:"numeric",month:"short",year:"numeric"})} · USD/t · en negrita la prima A3, en gris la estimada</span>
-          <table class="chain" style="--grain-c:var(--${id})"><tr><th>Call</th><th style="text-align:center">Strike</th><th>Put</th></tr>
-          ${ks.map(k=>`<tr><td>${pr(k,"C")}</td><td class="k">${k}</td><td>${pr(k,"P")}</td></tr>`).join("")}</table></div>
       </div></div>`;
   }).join("");
 }
@@ -2200,8 +2200,8 @@ $("bSave").onclick=()=>{
   renderBuilder();
 };
 $("bUse").onclick=()=>{if(!S.builder.length)return;const t=saved.find(x=>x.id==="tmp");if(t)t.legs=clone(S.builder);else saved.push({id:"tmp",nombre:"En armado",legs:clone(S.builder)});S.estr="tmp";showTab("sim")};
-$("board").addEventListener("change",e=>{const el=e.target,c=MKT.crops[el.dataset.c];if(!c)return;c[el.dataset.f]=el.type==="number"?+el.value:el.value;renderMkt();renderCropSeg()});
-$("mR").onchange=e=>{MKT.r=+e.target.value;renderMkt()};
+$("board").addEventListener("change",e=>{const el=e.target,c=MKT.crops[el.dataset.c];if(!c)return; if(el.dataset.f==="vol") PMAN[el.dataset.c]=true;c[el.dataset.f]=el.type==="number"?+el.value:el.value;renderMkt();renderCropSeg()});
+$("mR").onchange=e=>{MKT.r=+e.target.value;PMAN.r=true;renderMkt()};
 $("mOp").onchange=e=>{MKT.costOp=+e.target.value};
 $("mFecha").onchange=e=>{MKT.fecha=e.target.value;renderMkt()};
 $("mSave").onclick=()=>{LS.set("agro_mkt_v1",MKT);LS.set("agro_manual",true);$("mMsg").textContent="Precios fijados en este dispositivo.";priceStatus()};
@@ -2284,6 +2284,16 @@ function chqFor(days){
   const b=TASAS&&TASAS.echeqAvalado; if(!b||!b.length) return null;
   return b.find(x=>days>=x.desde&&days<=x.hasta)||b[b.length-1];
 }
+// Volatilidad (histórica de Chicago, contrato equivalente) y tasa en USD (letras del Tesoro a 13 semanas) para Black-76.
+let PARAMS=null; const PMAN={r:false};
+function applyParams(){
+  if(!PARAMS||isManual()) return;
+  if(PARAMS.r&&!PMAN.r) MKT.r=PARAMS.r.valor;
+  Object.entries(PARAMS.vol||{}).forEach(([id,v])=>{ const c=MKT.crops[id]; if(c&&!PMAN[id]) c.vol=v.valor });
+}
+const volInfo=id=>{ const v=PARAMS&&PARAMS.vol&&PARAMS.vol[id]; return v&&!PMAN[id]&&!isManual()?`Volatilidad ${fmt(v.valor,1)}%: ${v.fuente}, ${v.contrato}, al ${dmy(v.fecha)}.`:`Volatilidad ${fmt(MKT.crops[id].vol,1)}% cargada a mano.` };
+const rInfo=()=>PARAMS&&PARAMS.r&&!PMAN.r&&!isManual()?`Tasa en USD ${fmt(PARAMS.r.valor,2)}%: ${PARAMS.r.fuente}, al ${dmy(PARAMS.r.fecha)}.`:`Tasa en USD ${fmt(MKT.r,2)}% cargada a mano.`;
+async function loadParams(){ const j=await getJSON("datos/parametros.json"); if(j&&(j.vol||j.r)){ PARAMS=j; applyParams(); showTabSoft(CUR) } }
 async function loadTasas(){ const j=await getJSON("datos/tasas.json"); if(j&&j.echeqAvalado){ TASAS=j; renderTicker(); if(CUR==="fin") renderFin() } }
 
 /* ---------- Cinta de precios ---------- */
@@ -2722,7 +2732,7 @@ $("disc").textContent="Simulación ilustrativa con precios de referencia. No con
   showTab("sim",true); renderAgent(); loadAgentes(); renderOpps(); markNav(); try{renderQR()}catch(e){}
   try{ setTicker(localStorage.getItem("agro_tk")!=="0") }catch(e){ setTicker(true) }
   $("tkHide").onclick=()=>setTicker(false); $("tkShow").onclick=()=>setTicker(true);
-  renderTicker(); loadSpot(); loadTasas(); setInterval(loadSpot,30*60*1000); setInterval(loadTasas,30*60*1000);
+  renderTicker(); loadSpot(); loadTasas(); loadParams(); setInterval(loadParams,60*60*1000); setInterval(loadSpot,30*60*1000); setInterval(loadTasas,30*60*1000);
   priceStatus(); loadLive(); loadPrimas(); setInterval(loadPrimas,10*60*1000); a3Live(); setInterval(a3Live,5*60*1000); setInterval(loadLive, 10*60*1000); loadStats(); setInterval(loadStats, 60*60*1000);
   if(window.claude&&window.claude.use) window.claude.use("downloads").then(d=>{if(d)DL=d}).catch(()=>{});
 })();
