@@ -702,15 +702,21 @@ body.admin #v-qr{display:flex!important}
 }
 .sidenav{display:none}
 @media (min-width:1280px){
-  body{padding-right:232px}
-  .sidenav{display:flex;flex-direction:column;gap:2px;position:fixed;top:84px;right:16px;width:204px;max-height:calc(100vh - 150px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;z-index:15}
-  .sntitle{font:600 .72rem var(--font-body);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:2px 8px 6px}
-  .sidenav a,.sidenav button{display:flex;align-items:center;gap:8px;text-align:left;border:0;background:transparent;color:var(--muted);font:500 .9rem var(--font-body);text-decoration:none;padding:7px 8px;border-radius:10px;cursor:pointer}
-  .sidenav i{font:700 .95rem var(--font-display);font-style:normal;color:var(--faint);width:14px}
-  .sidenav .sub{padding-left:30px;font-size:.84rem}
-  .sidenav [aria-current="true"]{background:var(--field-l);color:var(--ink)}
+  body{padding-right:260px}
+  /* Índice tipo artículo: columna fija a todo el alto, sin tarjetas */
+  .sidenav{display:flex;flex-direction:column;position:fixed;top:var(--snTop,59px);right:0;bottom:0;width:260px;overflow:auto;background:var(--bg);border-left:1px solid var(--line);padding:28px 24px 64px 28px;z-index:15}
+  body:not(.tk-off) .sidenav{bottom:36px}
+  .sntitle{font:600 .7rem var(--font-body);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 14px}
+  .sidenav a,.sidenav button{position:relative;display:block;text-align:left;border:0;background:transparent;color:var(--muted);font:400 .92rem/1.35 var(--font-body);text-decoration:none;padding:7px 0 7px 16px!important;margin:0!important;min-height:0!important;height:auto!important;width:100%;cursor:pointer;border-left:2px solid var(--line);border-radius:0;transition:color .15s,border-color .15s}
+  .sidenav i{font-style:normal;color:var(--faint);margin-right:8px;font-variant-numeric:tabular-nums}
+  .sidenav [data-sn]:not(.sub){margin-top:10px!important;color:var(--ink);font-weight:500}
+  .sidenav [data-sn]:first-of-type{margin-top:0!important}
+  .sidenav .sub{padding-left:38px!important;font-size:.86rem}
+  .sidenav a:hover,.sidenav button:hover{color:var(--ink);border-left-color:var(--faint)}
+  .sidenav [aria-current="true"]{color:var(--field)!important;border-left-color:var(--field);font-weight:600}
   .sidenav [aria-current="true"] i{color:var(--field)}
   body.prod .sidenav .adv-only{display:none}
+}
 }
 .info{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1.3px solid currentColor;background:transparent;color:var(--faint);font:italic 600 11px/1 Georgia,serif;cursor:pointer;vertical-align:middle;margin-left:3px;padding:0;flex:none}
 .info:hover,.info:focus-visible{color:var(--field);outline:none}
@@ -2357,6 +2363,8 @@ function markNav(){
   document.querySelectorAll(".sidenav [data-tab]").forEach(b=>b.setAttribute("aria-current",(cur==="proba"&&b.dataset.tab===CUR)?"true":"false"));
 }
 addEventListener("scroll",markNav,{passive:true});
+const snTop=()=>{const h=document.querySelector(".appbar"); if(h) document.documentElement.style.setProperty("--snTop",Math.round(h.getBoundingClientRect().height)+"px")};
+addEventListener("resize",snTop); addEventListener("load",snTop); snTop();
 document.addEventListener("click",e=>{ const b=e.target.closest(".sidenav [data-tab]"); if(!b) return; showTab(b.dataset.tab); setTimeout(markNav,600) });
 
 /* ---------- Contacto ---------- */
