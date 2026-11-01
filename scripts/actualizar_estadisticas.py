@@ -95,12 +95,12 @@ def sagyp():
     out = {"soja": soja, "maiz": prod.get("maiz", {}), "trigo": prod.get("trigo", {}), "girasol": prod.get("girasol", {})}
     series = {}
     for g, d in out.items():
-        lst = sorted((c, round(v / 1e6, 1)) for c, v in d.items() if v > 0)
-        lst = [x for x in lst if x[0] >= "04/05"]
+        lst = sorted(((c, round(v / 1e6, 1)) for c, v in d.items() if v > 0), key=lambda x: ckey(x[0]))
+        lst = [x for x in lst if ckey(x[0]) >= "2004"]
         if len(lst) >= 5:
             series[g] = [list(x) for x in lst]
-    area = [[c, round(v / 1e6, 2)] for c, v in sorted(sem.items()) if v > 0 and c >= "04/05"]
-    LOG.append(f"SAGyP: {url.rsplit('/', 1)[-1]}, última campaña {max((s[-1][0] for s in series.values()), default='?')}")
+    area = [[c, round(v / 1e6, 2)] for c, v in sorted(sem.items(), key=lambda x: ckey(x[0])) if v > 0 and ckey(c) >= "2004"]
+    LOG.append(f"SAGyP: {url.rsplit('/', 1)[-1]}, campañas {', '.join(g + ' ' + s[0][0] + '–' + s[-1][0] for g, s in series.items())}")
     return series, area
 
 
@@ -118,7 +118,7 @@ def yahoo(sym):
             continue
         m = dt.datetime.fromtimestamp(t, dt.timezone.utc).strftime("%Y-%m")
         out[m] = round(c * BU[sym], 1) if sym in BU else round(c, 1)
-    lst = sorted(out.items())[-60:]
+    lst = sorted(out.items())[-60:]  # meses "AAAA-MM": el orden de texto ya es cronológico
     if len(lst) < 24:
         raise ValueError(f"{sym}: pocos datos")
     return [list(x) for x in lst]
@@ -159,11 +159,23 @@ def psd():
     return res
 
 
-def merge(old, new):
+def ckey(k):
+    """Orden cronológico: campañas '04/05' (siglo según el año) y meses '2026-10'."""
+    m = re.match(r"^(\d{2})/(\d{2})$", str(k))
+    if m:
+        a = int(m.group(1))
+        return f"{(1900 if a >= 50 else 2000) + a}"
+    return str(k)
+
+
+def merge(old, new, desde=None):
     """Une dos series [[clave, valor], ...]: lo nuevo pisa lo viejo en la misma clave."""
     d = {k: v for k, v in (old or [])}
     d.update({k: v for k, v in new})
-    return [[k, d[k]] for k in sorted(d)]
+    ks = sorted(d, key=ckey)
+    if desde:
+        ks = [k for k in ks if ckey(k) >= desde]
+    return [[k, d[k]] for k in ks]
 
 
 def embedded():
@@ -194,9 +206,9 @@ def main():
         series, area = sagyp()
         P = new.setdefault("prod", {})
         for g, l in series.items():
-            P[g] = merge(P.get(g), l)
+            P[g] = merge(P.get(g), l, "2004")
         if len(area) >= 5:
-            new["areaGir"] = merge(new.get("areaGir"), area)
+            new["areaGir"] = merge(new.get("areaGir"), area, "2004")
 
     def do_cme():
         C = new.setdefault("cbot", {})
@@ -210,7 +222,7 @@ def main():
         r = psd()
         SC = new.setdefault("stockCons", {})
         for g, l in r.items():
-            SC[g] = merge(SC.get(g), l)
+            SC[g] = merge(SC.get(g), l, "2014")
 
     step("sagyp", do_sagyp)
     step("cme", do_cme)

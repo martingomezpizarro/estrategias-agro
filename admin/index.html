@@ -747,6 +747,37 @@ body.admin #v-qr{display:flex!important}
 .tkshow{position:fixed;right:14px;bottom:14px;z-index:40;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 14px;font:600 .82rem var(--font-body);box-shadow:0 6px 18px rgba(0,0,0,.12);cursor:pointer}
 body:not(.tk-off){padding-bottom:36px}
 body.focus-on .ticker,body.focus-on .tkshow{display:none}
+
+/* ===== Pizarra de mercado ===== */
+.mboard{display:flex;flex-direction:column;gap:10px;background:#141A0F;color:#E8E4D6;border-radius:var(--r);padding:16px;font-variant-numeric:tabular-nums}
+.mbhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
+.mbhead:first-child{margin-top:0}
+.mbhead b{font:600 1rem var(--font-body);color:#E9DDBA;letter-spacing:.02em}
+.mbbadge{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;color:rgba(232,228,214,.7);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:4px 10px}
+.mbbadge i{width:7px;height:7px;border-radius:50%;background:rgba(232,228,214,.45)}
+.mbbadge.live i{background:#7FD36A;box-shadow:0 0 0 3px rgba(127,211,106,.25)}
+.mbtbl{overflow-x:auto;border:1px solid rgba(255,255,255,.08);border-radius:10px}
+.mbtbl table{width:100%;border-collapse:collapse;font-size:.86rem;min-width:620px}
+.mbopts .mbtbl table{min-width:0}
+.mbtbl th{font:600 .72rem var(--font-body);text-transform:uppercase;letter-spacing:.06em;color:rgba(232,228,214,.55);text-align:right;padding:8px 10px;background:rgba(255,255,255,.04);white-space:nowrap}
+.mbtbl th.l,.mbtbl td.l{text-align:left}
+.mbtbl th.c,.mbtbl td.c{text-align:center;color:#E9DDBA}
+.mbtbl th small,.mbtbl td small{font-size:.74rem;color:rgba(232,228,214,.5);font-weight:400;text-transform:none;letter-spacing:0}
+.mbtbl td{padding:7px 10px;border-top:1px solid rgba(255,255,255,.06);white-space:nowrap}
+.mbtbl td.n{text-align:right}
+.mbtbl td.v{color:#fff;font-weight:700}
+.mbtbl td.up{color:#8FD97E}.mbtbl td.dn{color:#F2957F}
+.mbtbl td.est{color:rgba(232,228,214,.5);font-style:italic}
+.mbtbl tr.sel td{background:rgba(233,221,186,.08)}
+.mbtbl tr.spot td{background:rgba(255,255,255,.03);color:#E9DDBA}
+.mbsrc{font-size:.76rem;color:rgba(232,228,214,.55);margin:2px 2px 0}
+.mbsrc .info{color:rgba(232,228,214,.75)}
+.mbopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.mparams summary{cursor:pointer;display:flex;flex-direction:column;gap:2px;list-style:none;padding:4px 0}
+.mparams summary span{font-size:.84rem;color:var(--faint)}
+.mparams summary::-webkit-details-marker{display:none}
+.mparams summary b::before{content:"▸ ";color:var(--faint)}
+.mparams[open] summary b::before{content:"▾ "}
 </style>
 
 <header class="appbar">
@@ -1099,9 +1130,10 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
 <!-- ================= MERCADO ================= -->
 <section class="screen adv-only" id="v-mkt" hidden>
   <div class="sec" style="gap:4px"><h1 class="ltitle">Mercado</h1><p class="faint" id="mktDate"></p></div>
-  <div id="board" class="sec" style="gap:16px"></div>
-  <div class="sec">
-    <div class="sechead"><h3>Parámetros</h3></div>
+  <div id="mboard" class="mboard"></div>
+  <details class="sec mparams">
+    <summary><b>Parámetros del simulador</b><span>precio, volatilidad y vencimiento que usa la app; editables</span></summary>
+    <div id="board" class="sec" style="gap:16px"></div>
     <div class="list">
       <label class="rowi" for="mR"><span class="main"><b>Tasa en USD</b><span>% anual, para descontar primas</span></span><input id="mR" type="number" step="0.1"></label>
       <label class="rowi" for="mOp"><span class="main"><b>Costo operativo</b><span>USD por tonelada y por pata</span></span><input id="mOp" type="number" step="0.1"></label>
@@ -1110,7 +1142,7 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
     <div class="btns"><button class="btn primary" id="mSave">Fijar estos precios</button><button class="btn" id="mLive">Usar precios en vivo</button><button class="btn" id="mReset">Volver a referencia</button></div>
     <p class="note" id="mMsg" role="status"></p>
     <p class="note">La app toma los precios de A3 automáticamente cuando hay conexión. Si fijás precios a mano, quedan solo en este dispositivo hasta que vuelvas a "Usar precios en vivo". Las primas se toman de A3 cuando hay cotización del contrato; si no, se estiman con Black-76 y la app lo indica.</p>
-  </div>
+  </details>
 </section>
 
 
@@ -1607,7 +1639,52 @@ function renderBuilder(){
 }
 
 /* ---------- Mercado ---------- */
+/* ---------- Pizarra de mercado ---------- */
+function renderBoard(){
+  const el=$("mboard"); if(!el) return;
+  const live=A3.estado==="vivo", st=a3Label();
+  const f1=v=>v>0?fmt(v,1):"—", f0=v=>v>0?fmt(v,0):"—";
+  const chg=(v,ref)=>{ if(!(v>0&&ref>0)) return `<td class="n">—</td><td class="n">—</td>`; const d=v-ref, p=d/ref*100, c=Math.abs(d)<0.05?"":d>0?"up":"dn";
+    return `<td class="n ${c}">${d>0?"+":d<0?"−":""}${fmt(Math.abs(d),1)}</td><td class="n ${c}">${d>0?"+":d<0?"−":""}${fmt(Math.abs(p),2)}%</td>` };
+  const src=(t,info,url)=>`<p class="mbsrc">${t} ${I(info,url)}</p>`;
+  const badge=`<span class="mbbadge ${live?"live":""}"><i></i>${st}</span>`;
+  let h=`<div class="mbhead"><b>Futuros agrícolas · Rosario</b>${badge}</div>`;
+  [["soja","SOJ.ROS"],["maiz","MAI.ROS"],["trigo","TRI.ROS"]].forEach(([id,pre])=>{
+    const sp=spotOf(id), ps=Object.keys(A3.px).filter(k=>k.startsWith(pre+"/")).map(k=>k.slice(pre.length+1)).filter(c=>codeEnd(c)>=dayStart()).sort((a,b)=>codeEnd(a)-codeEnd(b));
+    h+=`<div class="mbtbl"><table><thead><tr><th class="l">${MKT.crops[id].nombre} <small>USD/t</small></th><th>Compra</th><th>Venta</th><th>${live?"Último":"Ajuste"}</th><th>Var.</th><th>Var. %</th><th>Ajuste ant.</th><th>Volumen</th><th>Int. abierto</th></tr></thead><tbody>`;
+    if(sp) h+=`<tr class="spot"><td class="l">Disponible <small>pizarra ${dmy(sp.fecha)}</small></td><td class="n">—</td><td class="n">—</td><td class="n v">${fmt(sp.usd,1)}</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>`;
+    ps.forEach(c=>{ const r=A3.rows[pre+"/"+c]||{}, v=A3.px[pre+"/"+c];
+      h+=`<tr${c===A3COS[id]?' class="sel"':""}><td class="l">${pre}/${c} <small>${codeLbl(c)}</small></td><td class="n">${f1(r.bi)}</td><td class="n">${f1(r.of)}</td><td class="n v">${f1(v)}</td>${chg(v,r.pse)}<td class="n">${f1(r.pse)}</td><td class="n">${r.nv>0?fmt(r.nv,0)+" t":"—"}</td><td class="n">${f0(r.oi)}</td></tr>` });
+    h+=`</tbody></table></div>`;
+  });
+  h+=src(`Futuros: A3 Mercados (A3 Live) · ${st}. Disponible: pizarra de la Cámara Arbitral de Rosario (BCR), en USD al A3500.`,
+    `Futuros: pantalla pública A3 Live de A3 Mercados. Con la rueda abierta se muestra el último operado; cerrada, el precio de ajuste. Volumen en toneladas e interés abierto en contratos de 100 t. La fila resaltada es la posición que usa el simulador. Disponible: precio pizarra de la Cámara Arbitral de Cereales de Rosario, promedio ponderado de operaciones reales.`,"https://a3live.ar/");
+  // Dólar
+  const dps=dlrPos();
+  if(dps.length){
+    h+=`<div class="mbhead"><b>Dólar futuro</b><span class="mbbadge ${live?"live":""}"><i></i>A3500 $ ${fmt(A3.a3500,2)}</span></div><div class="mbtbl"><table><thead><tr><th class="l">Contrato <small>$ por USD</small></th><th>Compra</th><th>Venta</th><th>${live?"Último":"Ajuste"}</th><th>Var.</th><th>Var. %</th><th>Tasa implícita</th><th>Volumen</th><th>Int. abierto</th></tr></thead><tbody>`;
+    dps.forEach(c=>{ const r=A3.rows["DLR/"+c]||{}, v=A3.dlr["DLR/"+c], t=dlrRate(c);
+      h+=`<tr><td class="l">DLR/${c} <small>${codeLbl(c)}</small></td><td class="n">${f1(r.bi)}</td><td class="n">${f1(r.of)}</td><td class="n v">${f1(v)}</td>${chg(v,r.pse)}<td class="n">${fmt(t.r*100,1)}% <small>TNA</small></td><td class="n">${r.nv>0?"USD "+fmt(r.nv/1e6,1)+" M":"—"}</td><td class="n">${f0(r.oi)}</td></tr>` });
+    h+=`</tbody></table></div>`+src(`A3 Mercados (A3 Live) · tasa implícita contra el A3500, a fin de mes del contrato.`,`Tasa nominal anual implícita: (futuro / A3500 − 1) × 365 / días hasta el último día hábil del mes del contrato. A3500: Comunicación A 3500 del BCRA, tomada de A3 Live.`,"https://a3live.ar/");
+  }
+  // Tasas
+  h+=`<div class="mbhead"><b>Tasas</b></div><div class="mbtbl"><table><thead><tr><th class="l">Instrumento</th><th>Plazo</th><th>Tasa</th><th>Fuente</th></tr></thead><tbody>`;
+  if(A3.caucion) h+=`<tr><td class="l">Caución en pesos</td><td class="n">1 día</td><td class="n v">${fmt(A3.caucion,1)}%</td><td class="n"><small>A3 · ${live?"en vivo":"cierre"}</small></td></tr>`;
+  if(TASAS){ (TASAS.echeqAvalado||[]).forEach(b=>h+=`<tr><td class="l">Cheque avalado en pesos</td><td class="n">${b.plazo}</td><td class="n v">${fmt(b.tasa,1)}%</td><td class="n"><small>MAV · ${dmy(TASAS.fecha)}</small></td></tr>`);
+    const u=TASAS.pagareUsdAvalado; if(u) h+=`<tr><td class="l">Pagaré avalado en USD</td><td class="n">varios</td><td class="n v">${fmt(u.tasa,1)}%</td><td class="n"><small>MAV · ${dmy(TASAS.fecha)}</small></td></tr>`; }
+  h+=`</tbody></table></div>`+src(`Caución: A3. Cheques y pagarés: MAV, promedio ponderado por monto de las operaciones avaladas por SGR del último día.`,`Las tasas del MAV las baja un proceso automático cada hora en días hábiles desde mav-sa.com.ar. Son tasas nominales anuales.`,"https://mav-sa.com.ar/");
+  // Opciones
+  h+=`<div class="mbhead"><b>Opciones · primas en USD/t</b><span class="mbbadge">${Object.keys(MKT.primas).length?"A3 donde hay cotización":"estimadas (Black-76): falta conexión de opciones con A3"}</span></div><div class="mbopts">`;
+  Object.entries(MKT.crops).forEach(([id,c])=>{
+    const k0=Math.round(c.F/KSTEP)*KSTEP, ks=[-3,-2,-1,0,1,2,3].map(i=>k0+i*KSTEP);
+    const pr=(k,t)=>{const m=MKT.primas[`${c.tk} ${k} ${t}`]; return m>0?`<td class="n v">${fmt(m,1)}</td>`:`<td class="n est">${fmt(b76(t==="C"?"call":"put",c.F,k,c.vol/100,yearsTo(c),MKT.r/100).price,1)}</td>`};
+    h+=`<div class="mbtbl"><table><thead><tr><th>Call</th><th class="c">${c.tk} <small>vence ${dmy(c.ov)}</small></th><th>Put</th></tr></thead><tbody>${ks.map(k=>`<tr${k===k0?' class="sel"':""}>${pr(k,"C")}<td class="c">${k}</td>${pr(k,"P")}</tr>`).join("")}</tbody></table></div>`;
+  });
+  h+=`</div>`+src(`Primas: en blanco, cotización de A3; en gris, estimadas con Black-76 (volatilidad editable en parámetros).`,`A3 Live no publica opciones. Las primas de mercado se cargan cuando hay una fuente de A3 conectada (Primary API). Mientras tanto se estiman con Black-76 usando el futuro, la volatilidad, la tasa en USD y el vencimiento de la opción.`);
+  el.innerHTML=h;
+}
 function renderMkt(){
+  renderBoard();
   $("mR").value=MKT.r; $("mOp").value=MKT.costOp; $("mFecha").value=MKT.fecha;
   $("mktDate").textContent=a3Label()+" · USD por tonelada";
   $("board").innerHTML=Object.entries(MKT.crops).map(([id,c])=>{
@@ -2079,7 +2156,7 @@ $("qSave").onclick=()=>{contact.whatsapp=$("qWa").value.replace(/\D/g,"");contac
 /* ---------- Curva completa de A3 (A3 Live) ---------- */
 // Cierres del 22/10/2026. En producción se reemplazan solos con la pantalla pública de A3.
 const A3 = {
-  fecha:"2026-10-22", live:false, hora:null, estado:"guardado",
+  fecha:"2026-10-22", live:false, hora:null, estado:"guardado", rows:{},
   px:{"SOJ.ROS/NOV26":365.8,"SOJ.ROS/ENE27":371.9,"SOJ.ROS/MAY27":353.8,"SOJ.ROS/JUL27":361.4,
       "MAI.ROS/DIC26":194.5,"MAI.ROS/ABR27":193.4,"MAI.ROS/JUL27":190.5,"MAI.ROS/SEP27":194.5,
       "TRI.ROS/NOV26":216.8,"TRI.ROS/DIC26":217.8,"TRI.ROS/ENE27":223.2,"TRI.ROS/MAR27":228.7},
@@ -2462,13 +2539,13 @@ function a3Live(){
     try{
       // Con la rueda abierta, último operado; cerrada, el precio de ajuste del día.
       const d=m.arguments[0].data, open=mktOpen(), val=x=>open?(x.la>0?x.la:x.se):(x.se>0?x.se:(x.la>0?x.la:x.pse));
-      (d.agro||[]).forEach(x=>{ if(val(x)>0) A3.px[x.ticker]=val(x) });
-      (d.dollar||[]).forEach(x=>{ if(/^DLR\/[A-Z]{3}\d\d$/.test(x.ticker)&&val(x)>0) A3.dlr[x.ticker]=val(x) });
+      (d.agro||[]).forEach(x=>{ if(val(x)>0) A3.px[x.ticker]=val(x); A3.rows[x.ticker]=x });
+      (d.dollar||[]).forEach(x=>{ if(/^DLR\/[A-Z]{3}\d\d$/.test(x.ticker)&&val(x)>0) A3.dlr[x.ticker]=val(x); A3.rows[x.ticker]=x });
       (d.totals||[]).forEach(x=>{ if(x.id==="BCRACOM3500"&&x.value>0) A3.a3500=x.value; if(x.id==="CAARS"&&x.value>0) A3.caucion=x.value });
       A3.live=true; A3.estado=open?"vivo":"cierre"; if(!open) A3.fecha=lastClose(); A3.hora=new Date().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
       const crops={}; Object.keys(A3PRE).forEach(id=>{ const c=A3COS[id], p=a3P(id,c); if(p) crops[id]={F:p} });
       if(applyLive({crops,fecha:open?new Date().toISOString():A3.fecha,fuente:"A3 Mercados (A3 Live)"})){ renderCropSeg(); showTabSoft(CUR) }
-      renderOpps(); renderTicker();
+      renderOpps(); renderTicker(); if(CUR==="mkt") renderBoard();
     }catch(e){}
     clearTimeout(kill); ws.close();
   }) };

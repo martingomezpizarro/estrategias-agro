@@ -44,6 +44,8 @@ El workflow `.github/workflows/datos.yml` corre `scripts/actualizar_datos.py` ca
 
 Si una fuente falla, quedan los datos anteriores. Se puede correr a mano desde la pestaña Actions → "Actualizar datos de mercado" → Run workflow.
 
+Además, `.github/workflows/estadisticas.yml` corre los lunes `scripts/actualizar_estadisticas.py` y actualiza `estadisticas.json` (pestaña Datos): producción y área de la Secretaría de Agricultura (estimaciones agrícolas, CKAN), precios mensuales de Chicago y Live Cattle (CME vía Yahoo Finance) y relación stock/consumo mundial (USDA PSD). Las series se unen con las que ya tiene la app; lo que no se pudo bajar queda como estaba. El resto de la pestaña (INDEC, retenciones, ganadería de AgroIdeas, márgenes) sigue siendo carga manual.
+
 **Estado de los precios de A3.** Con la rueda abierta (días hábiles de 10 a 17) la app dice "En vivo"; fuera de horario muestra el ajuste y dice "Cierre del" último día hábil. Los feriados están en `FERIADOS` dentro de `index.html`: actualizarlos cada año.
 
 **Fuentes.** Cada número tiene una (i) con la fuente y la fecha. Si se agrega un dato, agregarle su (i).
