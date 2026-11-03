@@ -1,22 +1,22 @@
 {
- "actualizado": "2026-11-03T00:37-03:00",
+ "actualizado": "2026-11-03T17:11-03:00",
  "vol": {
   "soja": {
-   "valor": 14.4,
+   "valor": 14.5,
    "contrato": "Soja mayo 2027 (ZSK27)",
    "fecha": "2026-11-03",
    "ventana": 60,
    "fuente": "CME Group vía Yahoo Finance: volatilidad histórica anualizada de los últimos 60 cierres diarios"
   },
   "maiz": {
-   "valor": 20.5,
+   "valor": 20.7,
    "contrato": "Maíz mayo 2027 (ZCK27)",
    "fecha": "2026-11-03",
    "ventana": 60,
    "fuente": "CME Group vía Yahoo Finance: volatilidad histórica anualizada de los últimos 60 cierres diarios"
   },
   "trigo": {
-   "valor": 25.7,
+   "valor": 25.9,
    "contrato": "Trigo marzo 2027 (ZWH27)",
    "fecha": "2026-11-03",
    "ventana": 60,
@@ -24,8 +24,8 @@
   }
  },
  "r": {
-  "valor": 3.98,
-  "fecha": "2026-11-02",
+  "valor": 4.03,
+  "fecha": "2026-11-03",
   "fuente": "Rendimiento de las letras del Tesoro de EE.UU. a 13 semanas (^IRX, CBOE vía Yahoo Finance)"
  }
 }
