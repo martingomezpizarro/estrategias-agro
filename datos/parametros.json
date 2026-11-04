@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-04T04:00-03:00",
+ "actualizado": "2026-11-04T17:28-03:00",
  "vol": {
   "soja": {
    "valor": 14.5,
@@ -9,7 +9,7 @@
    "fuente": "CME Group vía Yahoo Finance: volatilidad histórica anualizada de los últimos 60 cierres diarios"
   },
   "maiz": {
-   "valor": 20.6,
+   "valor": 20.7,
    "contrato": "Maíz mayo 2027 (ZCK27)",
    "fecha": "2026-11-04",
    "ventana": 60,
@@ -25,7 +25,7 @@
  },
  "r": {
   "valor": 4.03,
-  "fecha": "2026-11-03",
+  "fecha": "2026-11-04",
   "fuente": "Rendimiento de las letras del Tesoro de EE.UU. a 13 semanas (^IRX, CBOE vía Yahoo Finance)"
  }
 }
