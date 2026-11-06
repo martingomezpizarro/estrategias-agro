@@ -1,24 +1,24 @@
 {
- "actualizado": "2026-11-05T22:40-03:00",
+ "actualizado": "2026-11-06T04:27-03:00",
  "vol": {
   "soja": {
    "valor": 14.5,
    "contrato": "Soja mayo 2027 (ZSK27)",
-   "fecha": "2026-11-05",
+   "fecha": "2026-11-06",
    "ventana": 60,
    "fuente": "CME Group vía Yahoo Finance: volatilidad histórica anualizada de los últimos 60 cierres diarios"
   },
   "maiz": {
    "valor": 18.7,
    "contrato": "Maíz mayo 2027 (ZCK27)",
-   "fecha": "2026-11-05",
+   "fecha": "2026-11-06",
    "ventana": 60,
    "fuente": "CME Group vía Yahoo Finance: volatilidad histórica anualizada de los últimos 60 cierres diarios"
   },
   "trigo": {
    "valor": 24.8,
    "contrato": "Trigo marzo 2027 (ZWH27)",
-   "fecha": "2026-11-05",
+   "fecha": "2026-11-06",
    "ventana": 60,
    "fuente": "CME Group vía Yahoo Finance: volatilidad histórica anualizada de los últimos 60 cierres diarios"
   }
