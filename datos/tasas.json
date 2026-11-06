@@ -1,62 +1,30 @@
 {
  "fuente": "MAV, Datos de Mercado (mav-sa.com.ar)",
- "fecha": "2026-11-05",
- "actualizado": "2026-11-05T17:44-03:00",
+ "fecha": "2026-11-06",
+ "actualizado": "2026-11-06T16:59-03:00",
  "echeqAvalado": [
-  {
-   "plazo": "hasta 30 días",
-   "desde": 0,
-   "hasta": 30,
-   "tasa": 24.86,
-   "operaciones": 22,
-   "monto": 818987141
-  },
   {
    "plazo": "31 a 60 días",
    "desde": 31,
    "hasta": 60,
-   "tasa": 25.14,
-   "operaciones": 29,
-   "monto": 1877755618
+   "tasa": 26.14,
+   "operaciones": 2,
+   "monto": 33760419
   },
   {
    "plazo": "61 a 90 días",
    "desde": 61,
    "hasta": 90,
-   "tasa": 25.31,
-   "operaciones": 29,
-   "monto": 4505416712
-  },
-  {
-   "plazo": "91 a 120 días",
-   "desde": 91,
-   "hasta": 120,
-   "tasa": 25.78,
-   "operaciones": 30,
-   "monto": 2890734603
-  },
-  {
-   "plazo": "121 a 180 días",
-   "desde": 121,
-   "hasta": 180,
-   "tasa": 28.63,
-   "operaciones": 51,
-   "monto": 1320066587
-  },
-  {
-   "plazo": "181 a 365 días",
-   "desde": 181,
-   "hasta": 400,
-   "tasa": 29.09,
-   "operaciones": 19,
-   "monto": 345452258
+   "tasa": 27.66,
+   "operaciones": 3,
+   "monto": 14197359
   }
  ],
  "pagareUsdAvalado": {
-  "tasa": 7.09,
-  "operaciones": 33,
-  "monto": 1071782,
-  "min": 0.0,
+  "tasa": 6.93,
+  "operaciones": 7,
+  "monto": 227288,
+  "min": 6.5,
   "max": 8.0
  },
  "nota": "Promedio ponderado por monto liquidado de las operaciones avaladas por SGR del día. Tasas nominales anuales."

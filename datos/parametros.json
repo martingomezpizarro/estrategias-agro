@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-06T04:27-03:00",
+ "actualizado": "2026-11-06T16:59-03:00",
  "vol": {
   "soja": {
    "valor": 14.5,
@@ -16,7 +16,7 @@
    "fuente": "CME Group vía Yahoo Finance: volatilidad histórica anualizada de los últimos 60 cierres diarios"
   },
   "trigo": {
-   "valor": 24.8,
+   "valor": 24.9,
    "contrato": "Trigo marzo 2027 (ZWH27)",
    "fecha": "2026-11-06",
    "ventana": 60,
@@ -24,8 +24,8 @@
   }
  },
  "r": {
-  "valor": 3.99,
-  "fecha": "2026-11-05",
+  "valor": 4.0,
+  "fecha": "2026-11-06",
   "fuente": "Rendimiento de las letras del Tesoro de EE.UU. a 13 semanas (^IRX, CBOE vía Yahoo Finance)"
  }
 }
