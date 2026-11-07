@@ -8,7 +8,9 @@
       "mail": "gomezpizarromartin@gmail.com",
       "alyc": "AVSA",
       "cuentaURL": "https://aperturas.avsa.com.ar/?advisor_alias=GONZALO_GOMEZPIZARRO",
-      "activo": true
+      "activo": true,
+      "juego": true,
+      "bonificacion": 50
     },
     "gomez-pizarro-gonzalo": {
       "nombre": "Gonzalo Gómez Pizarro",

@@ -63,6 +63,17 @@ Los agentes se administran desde `/admin` → "Agentes y links": agregar, editar
 
 La autoría del pie de página sigue siendo la del autor de la plataforma.
 
+## El desafío de la cosecha (`/juego`) y la página de cobertura (`/cobertura`)
+
+Dos entradas pensadas para eventos, aparte de la página completa:
+
+- **`/juego/?a=<agente>`**: juego de 5 preguntas sobre cobertura (20 segundos cada una, puntos por acierto, rapidez y racha). Entre preguntas una cosechadora cruza la pantalla y la planta del costado crece con el avance. Al final, si el agente tiene el premio habilitado, se abre un regalo con la bonificación, se pide el mail y se muestran el código, WhatsApp del agente, apertura de cuenta y el simulador. Anda sin señal: GSAP y canvas-confetti están en `juego/vendor/` y los pedidos de mail quedan en el dispositivo hasta que haya conexión.
+  - Para cambiar el estilo visual ver `juego/LEEME-diseno.md`: los dibujos y animaciones están todos en `juego/ilustraciones.js`.
+  - Mail del premio: Google Apps Script, ver `scripts/apps-script/LEEME.md`. La URL va en `juego/config.js`.
+- **`/cobertura/?a=<agente>&codigo=<código>`**: abre la app en modo "solo cobertura" (`/?modo=cobertura`), sin el resto de las secciones. Con un código del juego muestra, debajo del detalle, cuánto se ahorra con la bonificación: comisión de referencia del 1 % (`COMISION` en `index.html`) sobre el valor operado (toneladas × futuro, o toneladas × prima en opciones).
+
+En `/admin` → Agentes y links, cada agente tiene "Juego con premio" y "Bonificación del premio" (%), además de "Matrícula CNV". Sin premio habilitado, el juego igual se puede jugar pero termina con los links al simulador y al WhatsApp del agente. Si el agente tiene el premio, en Códigos QR aparece el QR 4 del juego.
+
 ## Publicar cambios
 
 Cualquier cambio que se suba a `main` se publica solo en el subdominio en uno o dos minutos. Si cambiás `index.html`, subí también la versión en `sw.js` (`agro-v1` → `agro-v2`) para que las tablets que ya la instalaron tomen la nueva.

@@ -14,6 +14,23 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.hero-num .lead .today{display:block;font-size:.82rem;color:var(--faint);margin-bottom:4px}
 .hero-num .lead b{color:var(--ink);font-weight:600}
+
+/* ---- Modo solo cobertura (/cobertura/ o ?modo=cobertura) ---- */
+.solohead{display:none}
+body.solo-cob .solohead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:0 0 14px}
+body.solo-cob .solohead h2{margin:0}
+body.solo-cob .solohead a{color:var(--muted);font-size:.95rem}
+body.solo-cob .hero,body.solo-cob #ganado,body.solo-cob #hoy,body.solo-cob .connector,body.solo-cob .topnav,body.solo-cob .sidenav,
+body.solo-cob #proba>.flowhead,body.solo-cob #proba>.intro,body.solo-cob .toolsel,body.solo-cob .moretools,
+body.solo-cob #v-qr,body.solo-cob #v-sim .btn[data-tab="stats"],body.solo-cob .contactsec .photo{display:none!important}
+/* ---- Bonificación del desafío de la cosecha ---- */
+.bonobox{margin-top:12px;padding:14px 16px;border-radius:16px;border:1.5px solid var(--good);background:color-mix(in srgb,var(--good) 9%,transparent)}
+.bonobox .bt{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.bonobox .bt b{font-size:1.05rem}
+.bonobox .bn{font-size:1.6rem;font-weight:700;color:var(--good);white-space:nowrap}
+.bonobox .bd{display:grid;grid-template-columns:1fr auto;gap:4px 12px;margin:8px 0 6px;font-size:.95rem}
+.bonobox .bd span:nth-child(even){text-align:right;font-variant-numeric:tabular-nums}
+.bonobox small{display:block;color:var(--muted);font-size:.78rem;line-height:1.4}
 </style>
 </head>
 <body>
@@ -938,6 +955,7 @@ body.agpend .agtxt{visibility:hidden}
 <div class="connector"><span>Hacé la cuenta con tu campo</span></div>
 <!-- ================= PROBÁ ================= -->
 <section class="probe" id="proba">
+  <div class="solohead"><h2>Simulá tu cobertura</h2><a id="soloFull" href="/">Ver la página completa</a></div>
   <div class="flowhead"><span class="stepn">3</span><div><span class="eyebrow">Simulador</span><h2>Probá con tus números</h2></div></div>
   <p class="intro">Elegí qué querés hacer y la vista cambia. Futuros de A3. Cada estrategia dice qué contrato usa y si la prima es de mercado o estimada.</p>
   <div class="toolsel" role="tablist" aria-label="Herramientas">
@@ -1005,6 +1023,7 @@ body.agpend .agtxt{visibility:hidden}
   <div class="sec">
     <div class="sechead"><h3>Detalle</h3></div>
     <div class="list" id="kpis"></div>
+    <div class="bonobox" id="bonoBox" hidden></div>
   </div>
 
   <div class="sec prod-only">
@@ -1285,6 +1304,9 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
         <label class="rowi" for="agMail"><span class="main"><b>Mail</b></span><input id="agMail" type="email" autocomplete="off"></label>
         <label class="rowi" for="agAlyc"><span class="main"><b>ALyC</b><span>Donde se abre la cuenta</span></span><input id="agAlyc" type="text" autocomplete="off" placeholder="AVSA"></label>
         <label class="rowi" for="agCuenta"><span class="main"><b>Apertura de cuenta</b><span>Link con el alias del agente</span></span><input id="agCuenta" type="url" autocomplete="off"></label>
+        <label class="rowi" for="agMatricula"><span class="main"><b>Matrícula CNV</b><span>Número de agente productor (opcional)</span></span><input id="agMatricula" type="text" autocomplete="off"></label>
+        <label class="rowi" for="agJuego"><span class="main"><b>Juego con premio</b><span>Habilita el premio del desafío de la cosecha en /juego para este agente</span></span><input id="agJuego" type="checkbox" style="width:auto;min-height:auto"></label>
+        <label class="rowi" for="agBono"><span class="main"><b>Bonificación del premio</b><span>% de descuento sobre la comisión de la primera operación</span></span><input id="agBono" type="number" inputmode="numeric" min="0" max="100" step="5" placeholder="50"></label>
         <label class="rowi" for="agActivo"><span class="main"><b>Activo</b><span>Si lo apagás, su link muestra al agente predeterminado</span></span><input id="agActivo" type="checkbox" checked style="width:auto;min-height:auto"></label>
       </div>
       <div class="btns"><button class="btn primary" id="agSave" type="button">Guardar agente</button><button class="btn" id="agNew" type="button">Nuevo</button><button class="btn" id="agDel" type="button" hidden>Quitar agente</button></div>
@@ -1315,7 +1337,13 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
     <p class="note" id="qrWaLink" style="text-align:center"></p>
     <div class="btns"><button class="btn primary dl-btn" data-pdf="wa" style="flex:1">Descargar PDF</button><button class="btn" data-full="wa" style="flex:1">Pantalla completa</button></div>
   </div>
-  <button class="btn gold block dl-btn" data-pdf="both">Descargar los tres en un PDF</button>
+  <div class="card sec" style="align-items:stretch" id="qrJuegoCard" hidden>
+    <div class="sechead"><h3>Jugá el desafío de la cosecha</h3><span>QR 4</span></div>
+    <div class="qrbox" id="qrJuego"></div>
+    <p class="note" id="qrJuegoLink" style="word-break:break-all;text-align:center"></p>
+    <div class="btns"><button class="btn primary dl-btn" data-pdf="juego" style="flex:1">Descargar PDF</button><button class="btn" data-full="juego" style="flex:1">Pantalla completa</button></div>
+  </div>
+  <button class="btn gold block dl-btn" data-pdf="both">Descargar todos en un PDF</button>
   <p class="note" id="dlMsg" role="status"></p>
   <details class="cfg adminonly"><summary>Configurar links de los QR (asesor)</summary><div class="sec">
     <div class="list">
@@ -1464,6 +1492,11 @@ const AG_DEF={predeterminado:"martin",agentes:{martin:{nombre:CONFIG.asesor,rol:
 let AGENTES=(()=>{const c=LS.get("agro_agentes_cache",null);return c&&c.agentes?c:clone(AG_DEF)})();
 const AG_PARAM=(()=>{try{return (new URLSearchParams(location.search).get("a")||"").trim().toLowerCase()}catch(e){return ""}})();
 if(AG_PARAM) LS.set("agro_agente",AG_PARAM);
+/* Modo solo cobertura (/cobertura/ redirige a ?modo=cobertura) y código del desafío de la cosecha (?codigo=AYM-50-XXXXX) */
+const QS=(()=>{try{return new URLSearchParams(location.search)}catch(e){return new URLSearchParams()}})();
+if((QS.get("modo")||"").toLowerCase()==="cobertura") document.body.classList.add("solo-cob");
+const COMISION=0.01; // comisión de referencia de la ALyC sobre el valor operado
+const BONO=(()=>{const c=(QS.get("codigo")||"").trim().toUpperCase(); if(/^AYM-\d{1,3}-[A-Z0-9]{4,8}$/.test(c)){const v={codigo:c,pct:+c.split("-")[1]}; LS.set("agro_bono",v); return v} return LS.get("agro_bono",null)})();
 let AG_SLUG=AG_PARAM||LS.get("agro_agente","")||"";
 let AGENTE={};
 const contact={};
@@ -1592,6 +1625,18 @@ function summaryText(a,c,legs){
   if(a.be<1) return t+` Con esta cobertura <strong>cubrís tu costo con cualquier precio</strong>; sin cobertura necesitás ${usd(a.beNo)}.`;
   return t + (a.be<a.beNo-0.5?` Cubrís tu costo con un precio arriba de <strong>${usd(a.be)}</strong>; sin cobertura necesitás ${usd(a.beNo)}.`:` Cubrís tu costo con un precio arriba de ${usd(a.be)}.`);
 }
+function renderBono(a,c){
+  const box=$("bonoBox"); if(!box) return;
+  const legs=a.legs||[], tope=+AGENTE.bonificacion||0, pct=BONO?Math.min(BONO.pct,tope||BONO.pct):0;
+  if(!BONO||!pct||!legs.length||a.tons<=0){ box.hidden=true; return }
+  const base=a.tons*legs.reduce((t,l)=>t+l.q*(l.k==="fut"?c.F:Math.abs(premOf(l,c))),0), nor=base*COMISION, con=nor*(1-pct/100);
+  const hasOpt=legs.some(l=>l.k!=="fut"), hasFut=legs.some(l=>l.k==="fut");
+  box.hidden=false;
+  box.innerHTML=`<div class="bt"><b>Tu bonificación del ${fmt(pct)} %</b><span class="bn">ahorrás ≈ ${usd(nor-con)}</span></div>`
+   +`<div class="bd"><span>Valor operado (${hasFut&&hasOpt?"futuro a precio de hoy y primas":hasFut?"toneladas × futuro":"toneladas × prima"})</span><span>${usd(base)}</span>`
+   +`<span>Comisión de referencia (${fmt(COMISION*100)} %)</span><span>${usd(nor)}</span><span><b>Con tu bonificación</b></span><span><b>${usd(con)}</b></span></div>`
+   +`<small>Código ${BONO.codigo}. Ahorro aproximado: considera solo la comisión de la ALyC en tu primera operación; no incluye derechos de mercado ni impuestos. Cualquier consulta, escribile a ${agFirst()||"tu agente"}.</small>`;
+}
 function kpisHTML(a,c){
   const premTot=a.premNet*a.tons, ct=a.tons>0?Math.max(1,Math.round(a.tons/100)):0, legs=a.legs||[];
   const opts=legs.filter(l=>l.k!=="fut"), srcs=[...new Set(opts.map(l=>premSrc(l,c)))];
@@ -1662,7 +1707,7 @@ function renderSim(){
   $("cobVal").textContent=S.cob+"%";
   $("summary").innerHTML=summaryText(a,c,legs);
   $("estrDesc").textContent=estrDescOf(legs);
-  $("kpis").innerHTML=kpisHTML(a,c);
+  $("kpis").innerHTML=kpisHTML(a,c); renderBono(a,c);
   renderChips(); renderCta();
 }
 function legLabel(l){const c=crop();return (l.side===1?"Compra ":"Venta ")+(l.k==="fut"?"futuro ":l.k+" ")+tkOf(l,c)+(l.q!==1?` ×${fmt(l.q,2)}`:"")}
@@ -1920,12 +1965,13 @@ function renderLearn(){
 const QRS={
   sim:{url:()=>(AGENTE.esDef&&contact.simURL)||agLink(AGENTE.slug),title:"Simulá tu cobertura",q:"¿Cuánto cobrás si el precio cae a cosecha?",sub:"Escaneá, cargá tu cosecha y simulá tu cobertura en 1 minuto.",foot:"Piso de precio  ·  Collar costo cero  ·  Fijar precio hoy",file:"QR-Agro-y-Mercado-Simulador"},
   acc:{url:()=>contact.cuentaURL||"",title:"Abrí tu cuenta comitente",q:"Cubrí tu cosecha desde tu propia cuenta",sub:"Escaneá y completá la apertura online. Te acompaño en cada paso.",foot:"Futuros y opciones en A3  ·  Cheques y pagarés  ·  Asesoramiento",file:"QR-Agro-y-Mercado-Apertura"},
+  juego:{url:()=>AGENTE.juego===true?juegoLink(AGENTE.slug):"",title:"El desafío de la cosecha",q:"5 preguntas. Al final hay una sorpresa.",sub:"Escaneá y jugá desde tu celular. Dura 2 minutos.",foot:"Futuros  ·  Opciones  ·  Cobertura de precios",file:"QR-Agro-y-Mercado-Juego"},
   wa:{url:()=>contact.whatsapp?"https://wa.me/"+contact.whatsapp+"?text="+encodeURIComponent("Hola "+agFirst()+", te escribo desde el stand de Agro y Mercado. Quiero consultar por una cobertura para mi campaña."):"",title:"Escribime por WhatsApp",q:"¿Querés cubrir tu cosecha? Hablemos.",sub:"Escaneá y se abre el chat conmigo, con el mensaje listo para enviar.",foot:"Coberturas  ·  Apertura de cuenta  ·  Asesoramiento",file:"QR-Agro-y-Mercado-WhatsApp"}
 };
 function waLabel(){const n=contact.whatsapp||"";return n?"+"+n.replace(/^(54)(9)(\d{3})(\d{3})(\d{4})$/,"$1 $2 $3 $4-$5"):"Cargá tu número abajo"}
 function drawQR(el,text,size){el.innerHTML="";if(typeof QRCode==="undefined"){el.textContent="No se pudo cargar el generador de QR.";return null}if(!text){el.textContent="Falta el link.";return null}new QRCode(el,{text,width:size,height:size,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});return el.querySelector("canvas")}
 function qrDataURL(text){const t=document.createElement("div");const cv=drawQR(t,text,800);return cv?cv.toDataURL("image/png"):null}
-function renderQR(){$("qUrl").value=QRS.sim.url();$("qAcc").value=QRS.acc.url();$("qWa").value=contact.whatsapp||"";$("qrSimLink").textContent=QRS.sim.url();$("qrAccLink").textContent=QRS.acc.url();drawQR($("qrSim"),QRS.sim.url(),240);drawQR($("qrAcc"),QRS.acc.url(),240);$("qrWaLink").textContent=waLabel();drawQR($("qrWa"),QRS.wa.url(),240)}
+function renderQR(){$("qUrl").value=QRS.sim.url();$("qAcc").value=QRS.acc.url();$("qWa").value=contact.whatsapp||"";$("qrSimLink").textContent=QRS.sim.url();$("qrAccLink").textContent=QRS.acc.url();drawQR($("qrSim"),QRS.sim.url(),240);drawQR($("qrAcc"),QRS.acc.url(),240);$("qrWaLink").textContent=waLabel();drawQR($("qrWa"),QRS.wa.url(),240);const jg=QRS.juego.url();$("qrJuegoCard").hidden=!jg;if(jg){$("qrJuegoLink").textContent=jg;drawQR($("qrJuego"),jg,240)}}
 function pdfPage(doc,key){
   const q=QRS[key],W=210,H=297,img=qrDataURL(q.url());
   doc.setFillColor(247,245,238);doc.rect(0,0,W,H,"F");
@@ -1954,7 +2000,7 @@ async function downloadPDF(which){
   if(!window.jspdf){msg.textContent="No se pudo cargar el generador de PDF. Revisá la conexión y recargá.";return}
   if(!DL){msg.textContent="La descarga funciona al abrir la página desde claude.ai.";return}
   const doc=new window.jspdf.jsPDF({unit:"mm",format:"a4"});
-  const keys=which==="both"?["sim","acc","wa"]:[which]; keys.forEach((k,i)=>{if(i)doc.addPage();pdfPage(doc,k)});
+  const keys=which==="both"?["sim","acc","wa"].concat(QRS.juego.url()?["juego"]:[]):[which]; keys.forEach((k,i)=>{if(i)doc.addPage();pdfPage(doc,k)});
   const name=(which==="both"?"QR-Agro-y-Mercado":QRS[which].file)+".pdf";
   try{await DL.save({filename:name,data:doc.output("blob")});msg.textContent="Descargado: "+name}
   catch(e){msg.textContent=e&&e.code==="declined"?"Descarga cancelada.":e&&e.code==="rate_limited"?"Ya hay una descarga esperando confirmación.":"No se pudo descargar el PDF en esta vista."}
@@ -2787,11 +2833,16 @@ function renderContact(){
   $("cWa").hidden=!contact.whatsapp; $("cWaNum").textContent=waLabel();
   $("cMailBox").hidden=!mailTo(); $("cMailTxt").textContent=mailTo();
 }
+function juegoLink(slug){
+  const base=(/^https?:$/.test(location.protocol)&&!/claude/.test(location.hostname))?location.origin+"/":CONFIG.sitio+"/";
+  return base+"juego/?a="+encodeURIComponent(slug);
+}
 function agLink(slug){
   const base=(/^https?:$/.test(location.protocol)&&!/claude/.test(location.hostname))?location.origin+"/":CONFIG.sitio+"/";
   return base+"?a="+encodeURIComponent(slug);
 }
 function renderAgent(){
+  try{ $("soloFull").href="/?a="+encodeURIComponent(AGENTE.slug) }catch(e){}
   $("brandWho").textContent=AGENTE.nombre+" · "+(AGENTE.rol.split("·")[0].trim()||"Agente productor");
   document.querySelectorAll(".alycName").forEach(e=>e.textContent=AGENTE.alyc||"una ALyC");
   renderContact(); try{renderCta()}catch(e){} try{composeMsg()}catch(e){}
@@ -2824,7 +2875,7 @@ function agFill(k){
   const a=k?(agDraft().agentes[k]||{}):{};
   $("agSlug").value=k||""; $("agSlug").disabled=!!k; $("agNombre").value=a.nombre||""; $("agRol").value=a.rol||"";
   $("agWa").value=a.whatsapp||""; $("agMail").value=a.mail||""; $("agAlyc").value=a.alyc||""; $("agCuenta").value=a.cuentaURL||"";
-  $("agActivo").checked=a.activo!==false; $("agDel").hidden=!k||k===agDraft().predeterminado;
+  $("agActivo").checked=a.activo!==false; $("agMatricula").value=a.matricula||""; $("agJuego").checked=a.juego===true; $("agBono").value=a.bonificacion!=null?a.bonificacion:""; $("agDel").hidden=!k||k===agDraft().predeterminado;
   $("agEditTitle").textContent=k?"Editar: "+(a.nombre||k):"Agregar agente"; $("agEditMsg").textContent="";
 }
 document.addEventListener("click",e=>{
@@ -2837,12 +2888,14 @@ $("agNew").onclick=()=>agFill("");
 $("agSave").onclick=()=>{
   const k=$("agSlug").value.trim().toLowerCase(), msg=$("agEditMsg");
   if(!/^[a-z0-9][a-z0-9-]{1,39}$/.test(k)){ msg.textContent="El identificador va en minúsculas, sin espacios ni acentos (letras, números y guiones)."; return }
-  if(["admin","datos","scripts"].includes(k)){ msg.textContent="Ese identificador está reservado."; return }
+  if(["admin","datos","scripts","juego","cobertura","vendor"].includes(k)){ msg.textContent="Ese identificador está reservado."; return }
   const nombre=$("agNombre").value.trim(); if(!nombre){ msg.textContent="Falta el nombre."; return }
   const wa=$("agWa").value.replace(/\D/g,""), mail=$("agMail").value.trim();
   if(!wa&&!mail){ msg.textContent="Cargá al menos el WhatsApp o el mail, para que puedan contactarlo."; return }
   const d=agDraft(); if(!$("agSlug").disabled&&d.agentes[k]){ msg.textContent="Ya hay un agente con ese identificador."; return }
   d.agentes[k]={nombre,rol:$("agRol").value.trim()||"Agente productor · Mercado de capitales",whatsapp:wa,mail,alyc:$("agAlyc").value.trim(),cuentaURL:$("agCuenta").value.trim(),activo:$("agActivo").checked};
+  { const m=$("agMatricula").value.trim(), j=$("agJuego").checked, b=Math.max(0,Math.min(100,Math.round(+$("agBono").value||0)));
+    if(m) d.agentes[k].matricula=m; if(j){ d.agentes[k].juego=true; d.agentes[k].bonificacion=b||50 } }
   saveDraft(d); agFill(k); resolveAgent(); renderAgent(); $("agEditMsg").textContent="Guardado en este dispositivo. Falta publicarlo."; $("agPubBox").open=true;
 };
 $("agDel").onclick=()=>{
