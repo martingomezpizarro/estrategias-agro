@@ -9,6 +9,15 @@
       "alyc": "AVSA",
       "cuentaURL": "https://aperturas.avsa.com.ar/?advisor_alias=GONZALO_GOMEZPIZARRO",
       "activo": true
+    },
+    "gomez-pizarro-gonzalo": {
+      "nombre": "Gonzalo Gómez Pizarro",
+      "rol": "Agente Productor",
+      "whatsapp": "5493516236000",
+      "mail": "gomezpizarrogonzalo@gmail.com",
+      "alyc": "Argentina Valores",
+      "cuentaURL": "https://aperturas.avsa.com.ar/?advisor_alias=GONZALO_GOMEZPIZARRO",
+      "activo": true
     }
   }
 }
