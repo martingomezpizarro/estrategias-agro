@@ -8,7 +8,8 @@ El juego está separado en capas para poder cambiar todo lo visual sin tocar la 
 | `juego.css` | Colores, tipografías, tarjetas, botones, tamaños | **Sí, libremente** |
 | `index.html` | Estructura de las pantallas (los `id` los usa juego.js) | Solo el marcado visual; no cambiar los `id` |
 | `juego.js` | Preguntas, puntos, temporizador, agente del link, premio, mail, sonidos | No (salvo que se quiera cambiar el contenido) |
-| `config.js` | URL del Apps Script del mail | No |
+| `preguntas.js` | Banco de 30 preguntas (salen al azar) | Solo para agregar o corregir preguntas |
+| `config.js` | URL del Apps Script del mail y cantidad de preguntas por partida | No |
 | `vendor/` | GSAP y canvas-confetti, locales para que ande sin señal | No usar CDN |
 
 ## La interfaz que juego.js necesita de `ilustraciones.js`

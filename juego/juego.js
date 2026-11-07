@@ -124,8 +124,8 @@ const mascota = ILU.mascota($("mascot"));
 const fx = $("fx"), cows = $("cows");
 let etapa = 0;
 function avance(n, inst) {
-  const from = { v: etapa * 20 }; etapa = n; planta.set(n, inst);
-  gsap.to(from, { v: n * 20, duration: inst ? 0 : .9, onUpdate: () => $("pct").textContent = Math.round(from.v) + " %" });
+  const from = { v: etapa / N * 100 }; etapa = n; planta.set(Math.round(n / N * 5), inst);
+  gsap.to(from, { v: n / N * 100, duration: inst ? 0 : .9, onUpdate: () => $("pct").textContent = Math.round(from.v) + " %" });
 }
 gsap.to("#startBtn", { scale: 1.03, duration: .7, yoyo: true, repeat: -1, ease: "sine.inOut" });
 
@@ -152,23 +152,24 @@ function cartel(t) {
 }
 
 /* ================= PREGUNTAS ================= */
-const Q = [
-  { q: "Vendiste un futuro de soja a USD 300/tn. Al vencimiento la soja vale USD 270. ¿Qué pasa?",
-    o: ["Ganás USD 30/tn en el futuro, y eso compensa el menor precio de tu grano", "Perdés USD 30/tn en el futuro", "No pasa nada: el futuro solo importa si sube", "Te pagan USD 270 por el futuro"],
-    a: 0, e: "El futuro vendido gana cuando el precio baja. Vendés el grano a 270 y sumás los 30 que ganaste: tu precio queda en 300, el que fijaste." },
-  { q: "¿Qué te da comprar un put?",
-    o: ["La obligación de entregar el grano a precio fijo", "Un piso de precio: si baja, estás cubierto; si sube, aprovechás la suba", "Un techo: si sube, no podés vender más caro", "Un precio fijo sin ningún costo"],
-    a: 1, e: "El put es un derecho, no una obligación. Pagás una prima, como un seguro, y te asegurás un precio mínimo sin resignar la suba." },
-  { q: "Para entrar en un futuro, ¿qué tenés que poner?",
-    o: ["El valor total de la mercadería", "Una prima, como en las opciones", "Una garantía que se ajusta día a día, más comisiones", "Nada: no hay costo ni garantía"],
-    a: 2, e: "En el futuro no se paga prima: se deposita una garantía y las diferencias se ajustan todos los días. Conviene tener fondos para esos ajustes." },
-  { q: "Vendiste un futuro y el precio sube. ¿Cómo quedás?",
-    o: ["Ganás en el futuro y también en el grano", "Perdés en el futuro, pero tu grano vale más: quedás en el precio que fijaste", "Perdés todo el valor de la cosecha", "El contrato se cancela solo"],
-    a: 1, e: "Lo que perdés en el futuro lo recuperás vendiendo el grano más caro. La cobertura no busca ganar: busca asegurar el precio." },
-  { q: "¿Qué es un collar?",
-    o: ["Comprar un put y vender un call: piso y techo, con menos costo de prima", "Vender dos futuros al mismo tiempo", "Un seguro contra la sequía", "Comprar un call para especular con la suba"],
-    a: 0, e: "Con el call vendido cobrás una prima que paga parte del put. A cambio resignás la suba por encima del techo." }
-];
+/* Banco en preguntas.js: cada partida toma N al azar, sin repetir en el dispositivo hasta agotar el banco,
+   y mezcla el orden de las opciones. */
+const BANCO = (window.PREGUNTAS || []).filter(p => p && p.o && p.o.length >= 2);
+const N = Math.max(1, Math.min(BANCO.length, Math.round(+CFG.preguntasPorJuego || 5)));
+const mezclar = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function elegirPreguntas() {
+  let vistas = LS.get("agro_juego_vistas", []);
+  let libres = BANCO.filter(p => !vistas.includes(p.id));
+  if (libres.length < N) { vistas = []; libres = BANCO.slice(); }
+  const elegidas = mezclar(libres).slice(0, N);
+  LS.set("agro_juego_vistas", vistas.concat(elegidas.map(p => p.id)));
+  return elegidas.map(p => {
+    const orden = mezclar(p.o.map((t, i) => i));
+    return { q: p.q, o: orden.map(i => p.o[i]), a: orden.indexOf(p.a), e: p.e };
+  });
+}
+let Q = elegirPreguntas();
+$("nPreg").textContent = N;
 const SECS = 20;
 let qi = 0, aciertos = 0, racha = 0, reloj = null, respondida = false;
 
@@ -231,10 +232,10 @@ $("nextBtn").onclick = async () => {
 let sacudida = null;
 const lid = ILU.regalo($("gift")); ILU.rayos($("rays"));
 function prepararFinal() {
-  const n = aciertos === 5 ? 3 : aciertos >= 3 ? 2 : 1;
+  const n = aciertos === Q.length ? 3 : aciertos >= Q.length * .6 ? 2 : 1;
   $("stars").innerHTML = [0, 1, 2].map(i => ILU.estrella(i < n)).join("");
   gsap.set("#stars svg", { scale: 0 });
-  $("scoreTxt").textContent = aciertos === 5 ? "Acertaste las 5. Sabés cuidar tu precio." : `Acertaste ${aciertos} de 5. Y ya sabés las que faltaban.`;
+  $("scoreTxt").textContent = aciertos === Q.length ? `Acertaste las ${Q.length}. Sabés cuidar tu precio.` : `Acertaste ${aciertos} de ${Q.length}. Y ya sabés las que faltaban.`;
   $("finalPts").textContent = "0"; $("giftZone").hidden = true; $("noPrize").hidden = true;
   $("openGift").hidden = false; $("claim").hidden = true;
   gsap.set("#prize", { opacity: 0, scale: .2, xPercent: -50, yPercent: -50, x: 0, y: 0 });
@@ -322,7 +323,7 @@ $("mailForm").onsubmit = async e => {
 
 /* ================= REINICIO E INICIO ================= */
 document.querySelectorAll(".again").forEach(b => b.onclick = () => {
-  sfx.click(); qi = 0; aciertos = 0; racha = 0; puntos = 0; $("ptsN").textContent = "0"; $("mailForm").reset();
+  sfx.click(); Q = elegirPreguntas(); qi = 0; aciertos = 0; racha = 0; puntos = 0; $("ptsN").textContent = "0"; $("mailForm").reset();
   avance(0); pantalla("s-q"); mostrarPregunta();
 });
 $("startBtn").onclick = async () => {
