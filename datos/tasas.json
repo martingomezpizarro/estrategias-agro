@@ -1,7 +1,7 @@
 {
  "fuente": "MAV, Datos de Mercado (mav-sa.com.ar)",
  "fecha": "2026-11-06",
- "actualizado": "2026-11-06T16:59-03:00",
+ "actualizado": "2026-11-07T15:37-03:00",
  "echeqAvalado": [
   {
    "plazo": "31 a 60 días",
@@ -27,5 +27,289 @@
   "min": 6.5,
   "max": 8.0
  },
- "nota": "Promedio ponderado por monto liquidado de las operaciones avaladas por SGR del día. Tasas nominales anuales."
+ "segmentos": {
+  "cheque": {
+   "$": {
+    "Avalado": {
+     "tasa": 26.59,
+     "operaciones": 5,
+     "monto": 47957778,
+     "min": 26.0,
+     "max": 28.0,
+     "tramos": [
+      {
+       "plazo": "31 a 60 días",
+       "tasa": 26.14,
+       "operaciones": 2,
+       "monto": 33760419
+      },
+      {
+       "plazo": "61 a 90 días",
+       "tasa": 27.66,
+       "operaciones": 3,
+       "monto": 14197359
+      }
+     ]
+    },
+    "Garantizado": {
+     "tasa": 24.0,
+     "operaciones": 1,
+     "monto": 37667668,
+     "min": 24.0,
+     "max": 24.0,
+     "tramos": [
+      {
+       "plazo": "hasta 30 días",
+       "tasa": 24.0,
+       "operaciones": 1,
+       "monto": 37667668
+      }
+     ]
+    },
+    "NoGarantizado": {
+     "tasa": 26.0,
+     "operaciones": 27,
+     "monto": 878654896,
+     "min": 21.0,
+     "max": 60.0,
+     "tramos": [
+      {
+       "plazo": "hasta 30 días",
+       "tasa": 23.12,
+       "operaciones": 11,
+       "monto": 653984972
+      },
+      {
+       "plazo": "31 a 60 días",
+       "tasa": 33.6,
+       "operaciones": 8,
+       "monto": 69185633
+      },
+      {
+       "plazo": "61 a 90 días",
+       "tasa": 36.69,
+       "operaciones": 5,
+       "monto": 94123065
+      },
+      {
+       "plazo": "91 a 120 días",
+       "tasa": 38.0,
+       "operaciones": 1,
+       "monto": 7032501
+      },
+      {
+       "plazo": "121 a 180 días",
+       "tasa": 30.86,
+       "operaciones": 2,
+       "monto": 54328725
+      }
+     ]
+    }
+   }
+  },
+  "pagare": {
+   "USD": {
+    "Avalado": {
+     "tasa": 6.93,
+     "operaciones": 7,
+     "monto": 227288,
+     "min": 6.5,
+     "max": 8.0,
+     "tramos": [
+      {
+       "plazo": "31 a 60 días",
+       "tasa": 8.0,
+       "operaciones": 1,
+       "monto": 34718
+      },
+      {
+       "plazo": "121 a 180 días",
+       "tasa": 6.5,
+       "operaciones": 2,
+       "monto": 145815
+      },
+      {
+       "plazo": "181 a 365 días",
+       "tasa": 7.5,
+       "operaciones": 4,
+       "monto": 46755
+      }
+     ]
+    },
+    "NoGarantizado": {
+     "tasa": 7.92,
+     "operaciones": 6,
+     "monto": 1575974,
+     "min": 6.0,
+     "max": 12.0,
+     "tramos": [
+      {
+       "plazo": "hasta 30 días",
+       "tasa": 6.0,
+       "operaciones": 1,
+       "monto": 534932
+      },
+      {
+       "plazo": "61 a 90 días",
+       "tasa": 12.0,
+       "operaciones": 1,
+       "monto": 495321
+      },
+      {
+       "plazo": "181 a 365 días",
+       "tasa": 8.5,
+       "operaciones": 2,
+       "monto": 18451
+      }
+     ]
+    }
+   }
+  }
+ },
+ "nota": "Promedio ponderado por monto liquidado de las operaciones del día, por segmento (avalado por SGR, garantizado, no garantizado). Tasas nominales anuales.",
+ "corte": "media",
+ "cortes": {
+  "media": {
+   "hora": "15:37",
+   "segmentos": {
+    "cheque": {
+     "$": {
+      "Avalado": {
+       "tasa": 26.59,
+       "operaciones": 5,
+       "monto": 47957778,
+       "min": 26.0,
+       "max": 28.0,
+       "tramos": [
+        {
+         "plazo": "31 a 60 días",
+         "tasa": 26.14,
+         "operaciones": 2,
+         "monto": 33760419
+        },
+        {
+         "plazo": "61 a 90 días",
+         "tasa": 27.66,
+         "operaciones": 3,
+         "monto": 14197359
+        }
+       ]
+      },
+      "Garantizado": {
+       "tasa": 24.0,
+       "operaciones": 1,
+       "monto": 37667668,
+       "min": 24.0,
+       "max": 24.0,
+       "tramos": [
+        {
+         "plazo": "hasta 30 días",
+         "tasa": 24.0,
+         "operaciones": 1,
+         "monto": 37667668
+        }
+       ]
+      },
+      "NoGarantizado": {
+       "tasa": 26.0,
+       "operaciones": 27,
+       "monto": 878654896,
+       "min": 21.0,
+       "max": 60.0,
+       "tramos": [
+        {
+         "plazo": "hasta 30 días",
+         "tasa": 23.12,
+         "operaciones": 11,
+         "monto": 653984972
+        },
+        {
+         "plazo": "31 a 60 días",
+         "tasa": 33.6,
+         "operaciones": 8,
+         "monto": 69185633
+        },
+        {
+         "plazo": "61 a 90 días",
+         "tasa": 36.69,
+         "operaciones": 5,
+         "monto": 94123065
+        },
+        {
+         "plazo": "91 a 120 días",
+         "tasa": 38.0,
+         "operaciones": 1,
+         "monto": 7032501
+        },
+        {
+         "plazo": "121 a 180 días",
+         "tasa": 30.86,
+         "operaciones": 2,
+         "monto": 54328725
+        }
+       ]
+      }
+     }
+    },
+    "pagare": {
+     "USD": {
+      "Avalado": {
+       "tasa": 6.93,
+       "operaciones": 7,
+       "monto": 227288,
+       "min": 6.5,
+       "max": 8.0,
+       "tramos": [
+        {
+         "plazo": "31 a 60 días",
+         "tasa": 8.0,
+         "operaciones": 1,
+         "monto": 34718
+        },
+        {
+         "plazo": "121 a 180 días",
+         "tasa": 6.5,
+         "operaciones": 2,
+         "monto": 145815
+        },
+        {
+         "plazo": "181 a 365 días",
+         "tasa": 7.5,
+         "operaciones": 4,
+         "monto": 46755
+        }
+       ]
+      },
+      "NoGarantizado": {
+       "tasa": 7.92,
+       "operaciones": 6,
+       "monto": 1575974,
+       "min": 6.0,
+       "max": 12.0,
+       "tramos": [
+        {
+         "plazo": "hasta 30 días",
+         "tasa": 6.0,
+         "operaciones": 1,
+         "monto": 534932
+        },
+        {
+         "plazo": "61 a 90 días",
+         "tasa": 12.0,
+         "operaciones": 1,
+         "monto": 495321
+        },
+        {
+         "plazo": "181 a 365 días",
+         "tasa": 8.5,
+         "operaciones": 2,
+         "monto": 18451
+        }
+       ]
+      }
+     }
+    }
+   }
+  }
+ }
 }
