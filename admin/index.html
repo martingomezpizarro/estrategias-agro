@@ -833,6 +833,11 @@ body.agpend .agtxt{visibility:hidden}
 .mavcortes button{border:1px solid rgba(255,255,255,.18);background:transparent;color:#E8E4D6;font:600 .8rem var(--font-body);border-radius:999px;padding:5px 12px;cursor:pointer}
 .mavcortes button[aria-pressed="true"]{background:#E9DDBA;color:#141A0F;border-color:#E9DDBA}
 .mavcortes small{color:rgba(232,228,214,.6);font-size:.76rem}
+/* Financiamiento: aviso de costo negativo */
+.fbar .fneg{display:block;margin-top:6px;border:0;background:var(--field-l);color:var(--field-d);font:600 .8rem var(--font-body);border-radius:8px;padding:6px 10px;text-align:left;cursor:pointer;width:100%}
+/* Paso a paso: fila de costo de financiamiento */
+.cmp tr.hwfin td{border-top:2px solid var(--line);padding-top:10px;vertical-align:top}
+.cmp tr.hwfin small{font-weight:400;color:var(--faint);font-size:.76rem}
 </style>
 
 <header class="appbar">
@@ -1058,8 +1063,7 @@ body.agpend .agtxt{visibility:hidden}
     <div class="sechead"><h3>Sintético con futuros</h3><span>sin pedir un crédito</span></div>
     <div class="list">
       <label class="rowi" for="finFar"><span class="main"><b>Recomprás el grano en</b><span>Si tenés grano guardado: lo vendés hoy y comprás esta posición</span></span><select id="finFar"></select></label>
-      <label class="rowi" for="finAlm"><span class="main"><b>Almacenaje que te ahorrás</b><span>USD por tonelada y por mes</span></span><input id="finAlm" type="number" inputmode="decimal" value="1" step="0.1"></label>
-      <label class="rowi" for="finCau"><span class="main"><b>Caución tomadora</b><span>% TNA en A3, si tenés títulos en garantía</span></span><input id="finCau" type="number" inputmode="decimal" step="0.1"></label>
+      <label class="rowi" for="finAlm"><span class="main"><b>Almacenaje que te ahorrás</b><span>USD por tonelada y por mes. No hay tarifa oficial: cargá lo que te cobra tu acopio o lo que te cuesta tu silo bolsa.</span></span><input id="finAlm" type="number" inputmode="decimal" value="0" step="0.1"></label>
       <label class="rowi" for="finDev"><span class="main"><b>Tasa del dólar futuro</b><span id="finDevS">% TNA implícita en A3</span></span><input id="finDev" type="number" inputmode="decimal" step="0.1"></label>
     </div>
   </div>
@@ -1073,9 +1077,9 @@ body.agpend .agtxt{visibility:hidden}
     </div>
   </div>
   <div class="article">
-    <h3>Las cinco formas</h3>
-    <p><b>Vender el grano y recomprarlo a futuro.</b> Si tenés grano en el silo, lo vendés hoy, pagás los insumos de contado y comprás la posición futura para seguir expuesto al precio como si lo tuvieras. Tu costo es la diferencia entre la posición futura y la de hoy, menos el almacenaje que te ahorrás. Con la curva invertida, el mercado te paga por hacerlo.</p>
-    <p><b>Caución tomadora + venta de dólar futuro.</b> Tomás pesos en caución dejando en garantía bonos o acciones que ya tenés, y vendés dólar futuro para fijar a qué dólar vas a convertir la cosecha cuando tengas que devolverlos. La caución es a pocos días y se renueva: si la tasa sube, el costo sube.</p>
+    <h3>Las cuatro formas</h3>
+    <p><b>Vender el grano y recomprarlo a futuro.</b> Si tenés grano en el silo, lo vendés hoy, pagás los insumos de contado y comprás la posición futura para seguir expuesto al precio como si lo tuvieras. Tu costo es la diferencia entre la posición futura y el disponible de hoy (pizarra de Rosario), menos el almacenaje que te ahorrás. Si la posición futura vale menos que el disponible, el costo es negativo: el mercado te paga por hacerlo, y conviene mirar la operación en Tasa.</p>
+
     <p><b>Cheque en pesos + venta de dólar futuro.</b> Descontás un cheque avalado en el MAV y vendés dólar futuro al vencimiento: la deuda en pesos queda calzada con tu ingreso en dólares, a una tasa conocida desde el primer día.</p>
     <div class="formula">costo en USD (pesos + dólar futuro) = (1 + tasa en pesos · t) / (1 + tasa dólar futuro · t) − 1
 costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
@@ -1109,7 +1113,7 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
         <label class="rowi" for="kNear"><span class="main"><b>Posición cercana</b><span>La que vendés o tenés hoy</span></span><select id="kNear"></select></label>
         <label class="rowi" for="kFar"><span class="main"><b>Posición lejana</b><span>La que comprás o vendés a futuro</span></span><select id="kFar"></select></label>
         <label class="rowi" for="kTn"><span class="main"><b>Toneladas</b><span>Grano en el silo o a cosechar</span></span><input id="kTn" type="number" inputmode="decimal" value="1000"></label>
-        <label class="rowi" for="kAlm"><span class="main"><b>Almacenaje</b><span>USD por tonelada y por mes</span></span><input id="kAlm" type="number" inputmode="decimal" value="1" step="0.1"></label>
+        <label class="rowi" for="kAlm"><span class="main"><b>Almacenaje</b><span>USD por tonelada y por mes. No hay tarifa oficial: cargá lo que te cobra tu acopio o lo que te cuesta tu silo bolsa.</span></span><input id="kAlm" type="number" inputmode="decimal" value="0" step="0.1"></label>
         <label class="rowi" for="kCaja"><span class="main"><b>Tasa de tu caja</b><span>% anual en USD que conseguís</span></span><input id="kCaja" type="number" inputmode="decimal" value="4" step="0.5"></label>
       </div>
     </div>
@@ -2556,29 +2560,31 @@ function renderFin(){
   const dps=dlrPos(), dsel=dps.reduce((a,p)=>Math.abs(codeEnd(p)-target)<Math.abs(codeEnd(a)-target)?p:a,dps[0]);
   if(!finDevTouched&&dsel) $("finDev").value=(Math.round(dlrRate(dsel).r*1000)/10);
   $("finDevS").textContent=dsel?`% TNA implícita en A3 (dólar ${codeLbl(dsel)})`:"% TNA implícita en A3";
-  if(!finCauTouched) $("finCau").value=A3.caucion;
   const ps=a3Pos(id), near=ps[0], fars=ps.slice(1);
   if(!fars.includes(finFar)) finFar=fars.reduce((a,p)=>Math.abs(codeEnd(p)-target)<Math.abs(codeEnd(a)-target)?p:a,fars[0]);
   $("finFar").innerHTML=fars.map(p=>`<option value="${p}"${p===finFar?" selected":""}>${c.nombre} ${codeLbl(p)} · ${fmt(a3P(id,p),1)}</option>`).join("");
-  const a=a3P(id,near), b=a3P(id,finFar), mg=Math.max((codeEnd(finFar)-dayStart())/864e5/30.4,0.5);
+  const a=a3P(id,near), b=a3P(id,finFar), mg=Math.max((new Date(futVenc(finFar)+"T12:00:00")-dayStart())/864e5/30.4,0.5);
   const dev=v("finDev")/100, F=c.F||a||1;
+  // Precio de hoy: el disponible de Rosario (pizarra en USD); sin pizarra, la posición A3 más cercana.
+  const sp=spotOf(id), S0=sp&&sp.usd>0?sp.usd:a, alm=v("finAlm");
+  const s0t=sp&&sp.usd>0?`disponible Rosario ${fmt(S0,1)} (pizarra ${dmy(sp.fecha)})`:`${codeLbl(near)} ${fmt(a,1)}`;
   const opts=[
-    {n:`Vender ${gn} hoy y recomprar ${codeLbl(finFar)}`,tag:"si tenés grano guardado",d:`${codeLbl(near)} a ${fmt(a,1)} y ${codeLbl(finFar)} a ${fmt(b,1)}, menos almacenaje`,c:A*(b/a-1-v("finAlm")*mg/a),t:mg/12},
-    {n:"Caución tomadora + venta de dólar futuro",tag:"si tenés títulos en garantía",d:`caución ${fmt(v("finCau"),1)}% en pesos, calzada al ${fmt(v("finDev"),1)}%`,c:A*((1+v("finCau")/100*t)/(1+dev*t)-1),t},
+    {n:`Vender ${gn} hoy y recomprar ${codeLbl(finFar)}`,tag:"si tenés grano guardado",d:`vendés al ${s0t} y recomprás ${codeLbl(finFar)} a ${fmt(b,1)}${alm>0?`, menos ${fmt(alm,1)} USD/t por mes de almacenaje`:", sin almacenaje cargado"}`,c:A*(b/S0-1-alm*mg/S0),t:mg/12,neg:true},
     {n:"Cheque en pesos + venta de dólar futuro",tag:"crédito en el MAV",d:`${fmt(v("finChq"),1)}% en pesos + aval, calzado al ${fmt(v("finDev"),1)}%`,c:A*((1+v("finChq")/100*t)/(1+dev*t)-1+aval),t},
     {n:"Pagaré avalado en dólares",tag:"crédito en el MAV",d:`${fmt(v("finPag"),1)}% anual + aval SGR`,c:A*(v("finPag")/100*t+aval),t},
     {n:"Canje con el proveedor",tag:"lo habitual",d:`${fmt(v("finCanje"),1)}% mensual en USD, pagás con ${gn}`,c:A*(v("finCanje")/100)*months,t}
   ];
-  const mx=Math.max(...opts.map(o=>Math.abs(o.c)),1e-9),best=opts.reduce((x,y)=>y.c<x.c?y:x),canje=opts[4];
-  const save=canje.c-best.c, tq=x=>`${fmt(Math.abs(x)/(a||F),0)} t de ${gn}`;
+  const mx=Math.max(...opts.map(o=>Math.abs(o.c)),1e-9),best=opts.reduce((x,y)=>y.c<x.c?y:x),canje=opts[opts.length-1];
+  const save=canje.c-best.c, tq=x=>`${fmt(Math.abs(x)/(S0||F),0)} t de ${gn}`, money=x=>x<0?"−"+usd(-x):usd(x);
   $("finLead").textContent="La forma más barata de financiar tu campaña";
-  $("finBig").innerHTML=best.c<0?`Te pagan ${usd(-best.c)}<small> · ${tq(best.c)}</small>`:`${usd(best.c)}<small> · ${tq(best.c)}</small>`;
-  $("finDelta").textContent=`${best.n} · ${best.tag}`;
-  $("finBars").innerHTML=opts.map(o=>`<div class="fbar ${o===best?"best":""}${o.c<0?" paid":""}"><div class="h"><b>${o.n}</b><span>${o.c<0?"te pagan "+usd(-o.c):usd(o.c)} · ${tq(o.c)}</span></div><div class="t"><i style="width:${Math.max(3,Math.abs(o.c)/mx*100)}%"></i></div><span class="d">${o.tag} · ${o.d} · ${o.c<0?"−":""}${fmt(Math.abs(o.c)/(A||1)/(o.t||1)*100,1)}% anual en USD</span></div>`).join("");
-  $("finSay").innerHTML=`Para financiar ${usd(A)} (${tq(A)} a ${fmt(a||F,1)} USD/t, ${c.nombre} ${codeLbl(near)}), <strong>${best.n.toLowerCase()}</strong> ${best.c<0?"no te cuesta nada y ":""}te ahorra <strong>${usd(save)}</strong> frente al canje: ${tq(save)} que quedan en tu campo.`;
+  $("finBig").innerHTML=`${money(best.c)}<small> · ${tq(best.c)}</small>`;
+  $("finDelta").textContent=`${best.n} · ${best.tag}${best.c<0?" · costo negativo: verificá la operación en Tasa":""}`;
+  $("finBars").innerHTML=opts.map(o=>`<div class="fbar ${o===best?"best":""}${o.c<0?" paid":""}"><div class="h"><b>${o.n}</b><span>${money(o.c)} · ${tq(o.c)}</span></div><div class="t"><i style="width:${Math.max(3,Math.abs(o.c)/mx*100)}%"></i></div><span class="d">${o.tag} · ${o.d} · costo ${o.c<0?"−":""}${fmt(Math.abs(o.c)/(A||1)/(o.t||1)*100,1)}% anual en USD</span>${o.c<0?`<button class="fneg" data-gotasa>Costo negativo: el mercado te paga por vender hoy y recomprar. Verificá la operación en Tasa →</button>`:""}</div>`).join("")
+    + `<p class="note">Costos de referencia, sin comisiones, derechos de mercado ni impuestos: sujetos a los costos de la ALyC o entidad con la que operes.</p>`;
+  $("finSay").innerHTML=`Para financiar ${usd(A)} (${tq(A)} a ${fmt(S0||F,1)} USD/t, ${sp&&sp.usd>0?"disponible Rosario":c.nombre+" "+codeLbl(near)}), <strong>${best.n.toLowerCase()}</strong> ${best.c<0?"tiene costo negativo (verificá la operación en Tasa) y ":""}te ahorra <strong>${usd(save)}</strong> frente al canje: ${tq(save)} que quedan en tu campo.`;
   $("finInsS").textContent=`USD en total · equivale a ${tq(A)}`;
   $("finPos").textContent=`${c.pos} · ${fmt(c.F,1)} USD/t`;
-  renderHow(near,finFar,a,b,mg);
+  renderHow(near,finFar,S0,b,mg,sp&&sp.usd>0?`disponible Rosario, pizarra del ${dmy(sp.fecha)}`:`${c.nombre} ${codeLbl(near)} en A3`);
 }
 ["finIns","finMeses","finCanje","finAval","finAlm"].forEach(id=>$(id).addEventListener("input",renderFin));
 let finChqTouched=false, finPagTouched=false;
@@ -2597,7 +2603,7 @@ function applyTasas(months){
     $("finPagI").innerHTML=I(`MAV, pagarés en dólares avalados por SGR del ${f}: ${fmt(u.tasa,2)}% anual, promedio ponderado por monto de ${u.operaciones} plazos operados (de ${fmt(u.min,2)}% a ${fmt(u.max,2)}%).`,"https://mav-sa.com.ar/") }
 }
 $("finDev").addEventListener("input",()=>{finDevTouched=true;renderFin()});
-$("finCau").addEventListener("input",()=>{finCauTouched=true;renderFin()});
+$("finBars").addEventListener("click",e=>{ if(!e.target.closest("[data-gotasa]")) return; TS.sub="granos"; showTab("tasa") });
 $("finFar").addEventListener("change",e=>{finFar=e.target.value;hwTouched=false;renderFin()});
 
 
@@ -2605,14 +2611,14 @@ $("finFar").addEventListener("change",e=>{finFar=e.target.value;hwTouched=false;
 let hwTouched=false;
 // Márgenes de garantía de Argentina Clearing (cámara de A3), USD por tonelada. Comunicación N° 563, 09/10/2026.
 const MARG={soja:17,maiz:8,trigo:16,spread:{soja:10,maiz:4,trigo:10},fecha:"09/10/2026",com:"563"};
-function renderHow(near,far,a,b,mg){
+function renderHow(near,far,a,b,mg,ref){
   const c=crop(), gn=c.nombre.toLowerCase(), v=k=>{const x=parseFloat($(k).value);return isFinite(x)?x:0};
   const A=v("finIns")||90000, tn=Math.max(1,Math.round(A/a)), alm=v("finAlm"), mgT=MARG[S.crop]||17;
   const sl=$("hwP"); sl.min=Math.round(b*0.75); sl.max=Math.round(b*1.25); sl.step=1; if(!hwTouched) sl.value=Math.round(b*0.9);
   const P=+sl.value, cobra=tn*a, gar=tn*mgT, d5=tn*5, fut=(P-b)*tn, almT=alm*mg*tn;
-  const silo=P*tn-almT, sint=cobra+fut, dif=sint-silo;
+  const silo=P*tn-almT, sint=cobra+fut, dif=sint-silo, hwTna=(-dif)/(cobra||1)*365/(mg*30.4)*100;
   $("hwLead").textContent=`Si tenés ${gn} en el silo y necesitás plata para los insumos, no hace falta pedir un crédito. Ejemplo con ${fmt(tn)} t, lo que alcanza para pagar ${usd(A)} de insumos:`;
-  $("hw1").innerHTML=`Vendés ${fmt(tn)} t a <span class="amt">${fmt(a,1)}</span> (referencia: ${c.nombre} ${codeLbl(near)} en A3) y cobrás <span class="amt">${usd(cobra)}</span>. Con eso pagás los insumos de contado. Dejás de pagar almacenaje.`;
+  $("hw1").innerHTML=`Vendés ${fmt(tn)} t a <span class="amt">${fmt(a,1)}</span> (referencia: ${ref||c.nombre+" "+codeLbl(near)+" en A3"}) y cobrás <span class="amt">${usd(cobra)}</span>. Con eso pagás los insumos de contado. Dejás de pagar almacenaje.`;
   $("hw2").innerHTML=`Comprás ${fmt(tn)} t de ${c.nombre} ${codeLbl(far)} a <span class="amt">${fmt(b,1)}</span>. No pagás la mercadería: solo dejás una garantía en tu cuenta, <span class="amt">${usd(gar)}</span> (USD ${mgT} por tonelada, ${fmt(mgT/b*100,1)}% del valor). Así seguís "teniendo" el grano: si el precio sube, ganás igual que si estuviera en el silo.`;
   $("hw3").innerHTML=`Todos los días A3 compara el precio con el del día anterior y liquida la diferencia en tu cuenta, en pesos al dólar A3500. Es lo mismo que le pasaría al valor de tu grano en el silo, pero en plata:`;
   $("hwDD").innerHTML=`<div><small>Si sube 5 USD/t</small><b class="pos">+${usd(d5)}</b><small>te acreditan</small></div><div><small>Si baja 5 USD/t</small><b class="neg">−${usd(d5)}</b><small>te debitan</small></div><div><small>Si baja 30 USD/t</small><b class="neg">−${usd(d5*6)}</b><small>tenés que tener esa plata</small></div>`;
@@ -2622,11 +2628,12 @@ function renderHow(near,far,a,b,mg){
   $("hwPl").textContent=`Probá: ¿y si en ${codeLbl(far)} vale…?`;
   $("hwCmp").innerHTML=`<thead><tr><th></th><th>Guardar en el silo</th><th>Vender + futuro</th></tr></thead><tbody>
     <tr><td>Hoy cobrás</td><td>USD 0</td><td>${usd(cobra)}</td></tr>
-    <tr><td>Almacenaje hasta ${codeLbl(far)}</td><td>−${usd(almT)}</td><td>USD 0</td></tr>
+    <tr><td>Almacenaje hasta ${codeLbl(far)}</td><td>${almT>0?"−":""}${usd(almT)}</td><td>USD 0</td></tr>
     <tr><td>Resultado del futuro</td><td>—</td><td class="${fut>=0?"pos":"neg"}">${sgn(fut)}</td></tr>
     <tr><td>Valor del grano en ${codeLbl(far)}</td><td>${usd(P*tn)}</td><td>—</td></tr>
-    <tr><td><b>Total</b></td><td><b>${usd(silo)}</b></td><td class="w">${usd(sint)}</td></tr></tbody>`;
-  $("hwNote").innerHTML=`Mové el precio: la diferencia entre las dos columnas no cambia, siempre es <b class="${dif>=0?"pos":"neg"}">${sgn(dif)}</b> (${sgn(dif/tn)} por tonelada). Sale de que hoy la posición ${codeLbl(far)} vale ${fmt(Math.abs(a-b),1)} USD/t ${b<a?"menos":"más"} que la de hoy, más el almacenaje que te ahorrás. ${b<a?"Por eso, con la curva invertida, financiarte con granos te sale gratis o te pagan.":"Ese es el costo de financiarte así."} El único compromiso extra: tener plata para las diferencias si el precio baja.`;
+    <tr><td><b>Total</b></td><td><b>${usd(silo)}</b></td><td class="w">${usd(sint)}</td></tr>
+    <tr class="hwfin"><td><b>Costo de financiarte</b><br><small>cobrás hoy ${usd(cobra)} y al ${dmy(futVenc(far))} te quedan ${usd(-dif)} menos que guardando</small></td><td colspan="2" class="${-dif>0?"neg":"pos"}"><b>${-dif<0?"−":""}${usd(Math.abs(dif))}</b><br><small>TNA ${-dif<0?"−":""}${fmt(Math.abs(hwTna),1)}% en USD</small></td></tr></tbody>`;
+  $("hwNote").innerHTML=`Mové el precio: la diferencia entre las dos columnas no cambia, siempre es <b class="${dif>=0?"pos":"neg"}">${sgn(dif)}</b> (${sgn(dif/tn)} por tonelada). Sale de que hoy la posición ${codeLbl(far)} vale ${fmt(Math.abs(a-b),1)} USD/t ${b<a?"menos":"más"} que el disponible de hoy${alm>0?", menos el almacenaje que te ahorrás":" (sin almacenaje cargado)"}. ${-dif<0?"El costo de financiarte es negativo: el mercado te paga por vender hoy y recomprar. Verificá la operación en Tasa.":`Ese es el costo de financiarte así: TNA ${fmt(hwTna,1)}% en dólares sobre lo que cobrás hoy.`} El único compromiso extra: tener plata para las diferencias si el precio baja.`;
 }
 $("hwP").addEventListener("input",()=>{hwTouched=true;renderFin()});
 /* ---------- Tasa ---------- */
