@@ -1382,8 +1382,16 @@ const LS = {
   get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
   set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
 };
+// Modo manual: vive solo en esta pestaña. Al cerrarla, la app vuelve a A3 (en vivo o último cierre).
+const SS = {
+  get(k,d){try{const v=sessionStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{sessionStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}},
+  del(k){try{sessionStorage.removeItem(k)}catch(e){}}
+};
+// Versiones anteriores guardaban el modo manual sin vencimiento: se borra.
+try{ localStorage.removeItem("agro_manual"); localStorage.removeItem("agro_mkt_v1") }catch(e){}
 const clone = o => JSON.parse(JSON.stringify(o));
-let MKT = LS.get("agro_manual",false) ? Object.assign(clone(DEF_MKT), LS.get("agro_mkt_v1", {})) : clone(DEF_MKT);
+let MKT = SS.get("agro_manual",false) ? Object.assign(clone(DEF_MKT), SS.get("agro_mkt_v1", {})) : clone(DEF_MKT);
 // Precios fijados a mano en versiones anteriores: completar contrato y pasar de qq/ha y USD/ha a t/ha y USD/t.
 Object.entries(MKT.crops).forEach(([id,c])=>{ const d=DEF_MKT.crops[id]; if(!d) return;
   ["tk","ov"].forEach(k=>{ if(!c[k]) c[k]=d[k] });
@@ -1826,7 +1834,7 @@ function showFull(k){$("ovTitle").textContent=QRS[k].title;$("ovSub").textConten
 
 /* ---------- Precios en vivo ---------- */
 let LIVE=null;
-function isManual(){ return LS.get("agro_manual",false) }
+function isManual(){ return SS.get("agro_manual",false) }
 function applyLive(j){
   if(!j||!j.crops) return false;
   LIVE=j;
@@ -2204,11 +2212,11 @@ $("board").addEventListener("change",e=>{const el=e.target,c=MKT.crops[el.datase
 $("mR").onchange=e=>{MKT.r=+e.target.value;PMAN.r=true;renderMkt()};
 $("mOp").onchange=e=>{MKT.costOp=+e.target.value};
 $("mFecha").onchange=e=>{MKT.fecha=e.target.value;renderMkt()};
-$("mSave").onclick=()=>{LS.set("agro_mkt_v1",MKT);LS.set("agro_manual",true);$("mMsg").textContent="Precios fijados en este dispositivo.";priceStatus()};
-$("mLive").onclick=()=>{LS.set("agro_manual",false);try{localStorage.removeItem("agro_mkt_v1")}catch(e){}MKT=clone(DEF_MKT);
+$("mSave").onclick=()=>{SS.set("agro_mkt_v1",MKT);SS.set("agro_manual",true);$("mMsg").textContent="Precios fijados mientras esta pestaña siga abierta. Al cerrarla vuelve a A3.";priceStatus()};
+$("mLive").onclick=()=>{SS.del("agro_manual");SS.del("agro_mkt_v1");MKT=clone(DEF_MKT);a3Live();
   if(LIVE){applyLive(LIVE);$("mMsg").textContent="Usando precios en vivo."}else{$("mMsg").textContent="Sin conexión a la fuente de precios: se usan los de referencia hasta que vuelva la señal.";loadLive()}
   renderMkt();renderCropSeg();priceStatus()};
-$("mReset").onclick=()=>{MKT=clone(DEF_MKT);LS.set("agro_mkt_v1",MKT);LS.set("agro_manual",true);renderMkt();renderCropSeg();priceStatus();$("mMsg").textContent="Precios de referencia fijados."};
+$("mReset").onclick=()=>{MKT=clone(DEF_MKT);SS.set("agro_mkt_v1",MKT);SS.set("agro_manual",true);renderMkt();renderCropSeg();priceStatus();$("mMsg").textContent="Precios de referencia fijados mientras esta pestaña siga abierta."};
 $("qClose").onclick=()=>{$("qrOverlay").hidden=true};
 $("qSave").onclick=()=>{contact.whatsapp=$("qWa").value.replace(/\D/g,"");contact.cuentaURL=$("qAcc").value.trim();contact.simURL=$("qUrl").value.trim();renderQR();
   $("qMsg").textContent=LS.set("agro_contact_v1",contact)?"Guardado en esta tablet.":"No se pudo guardar en esta tablet.";renderCta()};
