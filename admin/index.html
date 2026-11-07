@@ -798,6 +798,17 @@ body.agpend .agtxt{visibility:hidden}
 .pricebadge{align-self:center}
 .probe .pstat{justify-content:center}
 @media (max-width:640px){.opps>.opp{max-width:none}}
+/* Armar estrategia: tarjeta de cada pata */
+.legcard{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.legcard+.legcard{border-top:1px solid var(--line)}
+.leghead{display:flex;align-items:center;gap:12px}
+.leghead .main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.leghead .main b{font-weight:700;font-size:1rem}
+.leghead .main span{font-size:.82rem;color:var(--faint)}
+.legfields{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px}
+.legfields label{display:flex;flex-direction:column;gap:4px;font-size:.74rem;color:var(--faint)}
+.legfields input,.legfields select{font:500 1rem var(--font-body);background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:8px 10px;min-height:40px;width:100%;font-variant-numeric:tabular-nums}
+#v-build .list+.list{margin-top:10px}
 </style>
 
 <header class="appbar">
@@ -1132,6 +1143,7 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
       <button class="btn sm" id="bLoad">Copiar estrategia actual</button>
     </div>
     <div class="list" id="legsTbl"></div>
+    <div class="list"><label class="rowi" for="bHz"><span class="main"><b>Evaluar la estrategia al</b><span id="bHzTxt">Vacía: cada pata a su vencimiento</span></span><input id="bHz" type="date"></label></div>
   </div>
   <div class="sec">
     <div class="list">
@@ -1449,8 +1461,25 @@ function b76(type,F,K,s,T,r){
 const yearsTo = (c,opt=true) => Math.max((new Date(((opt&&c.ov)||c.venc)+"T12:00:00") - new Date())/(365*864e5), 1/365);
 const KSTEP = 4; // A3 lista strikes de soja, maíz y trigo cada 4 USD/t
 const strikeOf = (l,c) => Math.round(l.m*c.F/KSTEP)*KSTEP;
-const tkOf = (l,c) => l.k==="fut" ? c.tk : `${c.tk} ${strikeOf(l,c)} ${l.k==="put"?"P":"C"}`;
-const b76Prem = (l,c) => b76(l.k,c.F,strikeOf(l,c),c.vol/100,yearsTo(c),MKT.r/100).price;
+// Vencimientos A3: el futuro vence 5 ruedas antes del último día hábil de su mes; sus opciones, igual pero en el mes anterior.
+const mktBiz = iso => isBiz(iso) && !/-12-(24|31)$/.test(iso);
+function a3Venc(y,m){
+  const d=new Date(Date.UTC(y,m+1,0,12)), iso=()=>d.toISOString().slice(0,10), back=()=>d.setUTCDate(d.getUTCDate()-1);
+  while(!mktBiz(iso())) back();
+  for(let n=0;n<5;){ back(); if(mktBiz(iso())) n++ }
+  return iso();
+}
+const futVenc = code => a3Venc(2000+ +code.slice(3), MCODE[code.slice(0,3)]);
+const optVenc = code => { const y=2000+ +code.slice(3), m=MCODE[code.slice(0,3)]; return m ? a3Venc(y,m-1) : a3Venc(y-1,11) };
+// Cada pata puede usar otra posición A3 del mismo grano (l.pos, p. ej. "JUL27"). Sin pos, la del simulador.
+function legC(l,c){
+  if(!l.pos) return c;
+  const tk=A3PRE[S.crop]+"/"+l.pos; if(tk===c.tk) return c;
+  const F=A3.px[tk]; if(!(F>0)) return c;
+  return Object.assign({},c,{tk,F,venc:futVenc(l.pos),ov:optVenc(l.pos)});
+}
+const tkOf = (l,c) => { const lc=legC(l,c); return l.k==="fut" ? lc.tk : `${lc.tk} ${strikeOf(l,c)} ${l.k==="put"?"P":"C"}` };
+const b76Prem = (l,c) => { const lc=legC(l,c); return b76(l.k,lc.F,strikeOf(l,c),lc.vol/100,yearsTo(lc),MKT.r/100).price };
 // Origen de la prima: la que cargaste a mano, la de mercado de A3 para ese contrato o la estimada con Black-76.
 function premSrc(l,c){
   if(l.k==="fut") return null;
@@ -1464,10 +1493,15 @@ function premOf(l,c){
   return b76Prem(l,c);
 }
 const SRC_TXT={a3:"prima de mercado A3", manual:"prima cargada a mano", b76:"prima estimada (Black-76): A3 no la cotiza ahora"};
+// S: precio de la posición de referencia (c.tk). Las demás posiciones se mueven en la misma proporción.
+// Con c.hz (fecha de evaluación), las opciones que siguen vivas ese día se valúan con Black-76 (valor tiempo incluido).
 function legPay(l,S,c){
-  if(l.k==="fut") return l.side*(S-c.F);
-  const K=strikeOf(l,c), intr=l.k==="put"?Math.max(K-S,0):Math.max(S-K,0);
-  return l.side*(intr-premOf(l,c));
+  const lc=legC(l,c), Sl=S*lc.F/c.F;
+  if(l.k==="fut") return l.side*(Sl-lc.F);
+  const K=strikeOf(l,c);
+  let v=l.k==="put"?Math.max(K-Sl,0):Math.max(Sl-K,0);
+  if(c.hz){ const T=(new Date(lc.ov+"T12:00:00")-new Date(c.hz+"T12:00:00"))/(365*864e5); if(T>0) v=b76(l.k,Sl,K,lc.vol/100,T,MKT.r/100).price }
+  return l.side*(v-premOf(l,c));
 }
 const effPrice=(legs,S,c)=>S+legs.reduce((a,l)=>a+l.q*legPay(l,S,c),0)-MKT.costOp*legs.reduce((a,l)=>a+l.q,0);
 
@@ -1525,7 +1559,7 @@ function kpisHTML(a,c){
   const opts=legs.filter(l=>l.k!=="fut"), srcs=[...new Set(opts.map(l=>premSrc(l,c)))];
   const srcLbl=!srcs.length?"":srcs.length>1?"primas de mercado A3 y estimadas":srcs[0]==="a3"?`de mercado A3${MKT.primasInfo?" · "+MKT.primasInfo:""}`:srcs[0]==="manual"?"cargada a mano":"estimada con Black-76 (A3 no publica opciones) "+I(`Prima estimada con Black-76: futuro ${c.tk} ${fmt(c.F,1)} USD/t, vencimiento de la opción ${dmy(c.ov)}. ${volInfo(S.crop)} ${rInfo()}`);
   const row=(ini,t,s,v,vs,cls="")=>`<div class="rowi"><div class="av">${ini}</div><div class="main"><b>${t}</b><span>${s}</span></div><div class="side"><b class="${cls}">${v}</b><span class="faint">${vs}</span></div></div>`;
-  return (legs.length?row("A3","Contratos",legs.map(l=>(l.side===1?"compra ":"venta ")+tkOf(l,c)).join(" · "),c.tk.split("/")[1],"Rosario",""):"")
+  return (legs.length?row("A3","Contratos",legs.map(l=>(l.side===1?"compra ":"venta ")+tkOf(l,c)).join(" · "),[...new Set(legs.map(l=>legC(l,c).tk.split("/")[1]))].join(" · "),"Rosario",""):"")
    + row("t","Toneladas cubiertas",`${S.cob}% de ${fmt(a.total)} t`,`${fmt(a.tons)} t`,`≈ ${ct} contrato${ct===1?"":"s"} de 100 t`)
    + (opts.length?row("$",a.premNet>=0?"Prima que pagás":"Prima que cobrás",srcLbl,`${usd(Math.abs(a.premNet),1)}/t`,`${usd(Math.abs(premTot))} en total · ${fmt(Math.abs(a.premNet)/c.F*100,1)}% del precio`,a.premNet>0.05?"neg":"pos"):"")
    + row("=","Precio de equilibrio","para cubrir tu costo",a.be<1?"Cualquiera":`${usd(a.be)}/t`,`sin cubrir ${usd(a.beNo)}`,a.be<=a.beNo+0.5?"pos":"neg")
@@ -1554,7 +1588,7 @@ function renderChart(el,legs,c,opt){
     <line x1="${X(P)}" x2="${X(P)}" y1="${pt}" y2="${H-pb}" stroke="var(--ink)" stroke-width="1" opacity=".35"/>
     <circle cx="${X(P)}" cy="${pn}" r="5" fill="var(--bg)" stroke="var(--faint)" stroke-width="2"/>
     <circle cx="${X(P)}" cy="${py}" r="9" fill="var(--hedge)" stroke="var(--bg)" stroke-width="4"/>
-    <text x="20" y="${H-8}">${fmt(x0)}</text><text x="${W/2}" y="${H-8}" text-anchor="middle">precio a cosecha, USD/t</text><text x="${W-20}" y="${H-8}" text-anchor="end">${fmt(x1)}</text>
+    <text x="20" y="${H-8}">${fmt(x0)}</text><text x="${W/2}" y="${H-8}" text-anchor="middle">${c.hz?`precio ${c.tk.split("/")[1]} al ${dmy(c.hz)}, USD/t`:"precio a cosecha, USD/t"}</text><text x="${W-20}" y="${H-8}" text-anchor="end">${fmt(x1)}</text>
   </svg>`;
   const toP=e=>{const r=el.getBoundingClientRect(); const fx=Math.min(Math.max((e.clientX-r.left)/r.width,0),1); return x0+(x1-x0)*fx};
   el.onpointerdown=e=>{ try{el.setPointerCapture(e.pointerId)}catch(_){} opt.onScrub(toP(e)) };
@@ -1690,24 +1724,34 @@ function syncInputs(){
 }
 
 /* ---------- Armar ---------- */
-let bScrub=null;
+let bScrub=null, BHZ=null;
 function renderBuilder(){
-  const c=crop(), L=S.builder, a=analyze(L,c), P=bScrub??c.F;
+  const c0=crop(), c=BHZ?Object.assign({},c0,{hz:BHZ}):c0, L=S.builder, a=analyze(L,c), P=bScrub??c.F;
   $("bBig").innerHTML=`${usd(L.length?a.e(P):P)}<small>/t</small>`;
   const d=(L.length?a.e(P):P)-P;
   $("bDelta").innerHTML=`<span class="faint">a ${usd(P)}/t de mercado</span> · <span class="${d>=0?"pos":"neg"}">${sgn(d,1)}/t</span>`;
   renderChart($("bChart"),L,c,{P,mode:"eff",onScrub:x=>{bScrub=x;renderBuilder()}});
   if(bScrub!=null) return;
-  $("legsTbl").innerHTML = L.length ? L.map((l,i)=>`<div class="rowi legrow" style="flex-wrap:wrap">
-     <span class="av">${l.k==="fut"?"F":l.k==="put"?"P":"C"}</span>
-     <span class="main"><b>${l.k==="fut"?"Futuro":l.k==="put"?"Put":"Call"} ${tkOf(l,c)}</b><span>${l.k==="fut"?"a "+usd(c.F,1)+"/t":usd(premOf(l,c),1)+"/t · "+SRC_TXT[premSrc(l,c)]}</span></span>
-     <select id="bs${i}" data-i="${i}" data-f="side" aria-label="Operación"><option value="1"${l.side===1?" selected":""}>Compra</option><option value="-1"${l.side===-1?" selected":""}>Venta</option></select>
-     ${l.k==="fut"?"":`<input id="bk${i}" type="number" inputmode="decimal" data-i="${i}" data-f="K" value="${strikeOf(l,c)}" aria-label="Strike">`}
-     <input id="bq${i}" type="number" inputmode="decimal" data-i="${i}" data-f="q" value="${Math.round(l.q*100)}" aria-label="Proporción %">
-     ${l.k==="fut"?"":`<input id="bp${i}" type="number" step="0.1" inputmode="decimal" data-i="${i}" data-f="prem" placeholder="${fmt(MKT.primas[tkOf(l,c)]||b76Prem(l,c),1)}" value="${l.prem??""}" aria-label="Prima de mercado">`}
-     <button class="iconbtn" data-del="${i}" aria-label="Quitar">✕</button></div>`).join("")
-     + `<p class="note" style="padding:0 16px 14px">Campos: operación · strike USD/t (A3 lista cada 4) · proporción % · prima (vacío = la de A3 o, si no cotiza, Black-76)</p>`
+  const posOpts=l=>{ const ps=a3Pos(S.crop), cur=legC(l,c).tk.split("/")[1]; if(!ps.includes(cur)) ps.unshift(cur);
+    return ps.map(p=>`<option value="${p}"${p===cur?" selected":""}>${p} · ${fmt(a3P(S.crop,p)||c.F,1)}</option>`).join("") };
+  $("legsTbl").innerHTML = L.length ? L.map((l,i)=>{ const lc=legC(l,c), op=l.k!=="fut", nm=l.k==="fut"?"Futuro":l.k==="put"?"Put":"Call";
+    const sub=op?`${usd(premOf(l,c),1)}/t · ${SRC_TXT[premSrc(l,c)]} · la opción vence el ${dmy(lc.ov)}`:`a ${usd(lc.F,1)}/t · vence el ${dmy(lc.venc)}`;
+    return `<div class="legcard">
+     <div class="leghead"><span class="av">${l.k==="fut"?"F":l.k==="put"?"P":"C"}</span><span class="main"><b>${nm} ${tkOf(l,c)}</b><span>${sub}</span></span><button class="iconbtn" data-del="${i}" aria-label="Quitar pata">✕</button></div>
+     <div class="legfields">
+      <label>Operación<select data-i="${i}" data-f="side"><option value="1"${l.side===1?" selected":""}>Compra</option><option value="-1"${l.side===-1?" selected":""}>Venta</option></select></label>
+      <label>Posición A3<select data-i="${i}" data-f="pos">${posOpts(l)}</select></label>
+      ${op?`<label>Strike USD/t<input type="number" step="${KSTEP}" inputmode="decimal" data-i="${i}" data-f="K" value="${strikeOf(l,c)}"></label>`:""}
+      <label>Proporción %<input type="number" inputmode="decimal" data-i="${i}" data-f="q" value="${Math.round(l.q*100)}"></label>
+      ${op?`<label>Prima USD/t<input type="number" step="0.1" inputmode="decimal" data-i="${i}" data-f="prem" placeholder="${fmt(MKT.primas[tkOf(l,c)]||b76Prem(l,c),1)}" value="${l.prem??""}"></label>`:""}
+     </div></div>` }).join("")
+     + `<p class="note" style="padding:0 16px 14px">Strike: A3 lista cada ${KSTEP} USD/t. Prima vacía: la de A3 o, si no cotiza, Black-76. Cada posición trae su vencimiento; las opciones vencen un mes antes que su futuro.</p>`
    : `<div class="rowi"><span class="main"><b>Sin patas todavía</b><span>Agregá un futuro, un put o un call</span></span></div>`;
+  const exps=L.map(l=>{const lc=legC(l,c);return l.k==="fut"?lc.venc:lc.ov}).sort(), hz=$("bHz");
+  hz.min=artNow().iso; hz.max=exps.length?exps[exps.length-1]:""; hz.value=BHZ||"";
+  const vivas=BHZ?L.filter(l=>l.k!=="fut"&&legC(l,c).ov>BHZ).length:0;
+  $("bHzTxt").textContent=!BHZ?"Vacía: cada pata a su vencimiento"
+    :`Eje: precio ${c.tk.split("/")[1]} ese día${vivas?`. ${vivas===1?"La opción que sigue viva se valúa":"Las "+vivas+" opciones que siguen vivas se valúan"} con Black-76`:""}`;
   $("bSummary").innerHTML=summaryText(a,c,L);
   $("bKpis").innerHTML=kpisHTML(a,c);
   const list=saved.filter(s=>s.id!=="tmp");
@@ -2168,7 +2212,7 @@ document.addEventListener("click",e=>{
   else if(d.scen!=null){S.scen=+d.scen;S.scrub=null;renderSim()}
   else if(d.add){S.builder.push(d.add==="fut"?{k:"fut",side:-1,q:1}:{k:d.add,side:1,m:1,q:1});renderBuilder()}
   else if(d.del!=null){S.builder.splice(+d.del,1);renderBuilder()}
-  else if(d.edit){const s=saved.find(x=>x.id===d.edit);S.builder=clone(s.legs);$("bName").value=s.nombre;renderBuilder()}
+  else if(d.edit){const s=saved.find(x=>x.id===d.edit);S.builder=clone(s.legs);BHZ=s.hz||null;$("bName").value=s.nombre;renderBuilder()}
   else if(d.rm){saved=saved.filter(x=>x.id!==d.rm);LS.set("agro_estr_v1",saved.filter(x=>x.id!=="tmp"));if(S.estr===d.rm)S.estr="put";renderBuilder()}
   else if(d.pdf) downloadPDF(d.pdf);
   else if(d.full) showFull(d.full);
@@ -2201,17 +2245,19 @@ window.addEventListener("orientationchange",()=>setTimeout(()=>{
 $("legsTbl").addEventListener("change",e=>{
   const el=e.target,l=S.builder[+el.dataset.i],c=crop(); if(!l) return;
   if(el.dataset.f==="side")l.side=+el.value;
+  if(el.dataset.f==="pos"){ l.pos=el.value===c.tk.split("/")[1]?undefined:el.value; l.prem=null }
   if(el.dataset.f==="K")l.m=Math.max(+el.value,1)/c.F;
   if(el.dataset.f==="q")l.q=Math.max(+el.value,0)/100;
   if(el.dataset.f==="prem")l.prem=el.value===""?null:+el.value;
   renderBuilder();
 });
+$("bHz").onchange=e=>{ BHZ=e.target.value||null; bScrub=null; renderBuilder() };
 $("bLoad").onclick=()=>{S.builder=legsOf(S.estr).map(l=>({...l}));$("bName").value="";renderBuilder()};
 $("bSave").onclick=()=>{
   const n=$("bName").value.trim();
   if(!S.builder.length){$("bMsg").textContent="Agregá al menos una pata antes de guardar.";return}
   if(!n){$("bMsg").textContent="Poné un nombre para encontrarla en el simulador.";return}
-  const ex=saved.find(x=>x.nombre===n&&x.id!=="tmp"); if(ex) ex.legs=clone(S.builder); else saved.push({id:"s"+Date.now(),nombre:n,legs:clone(S.builder)});
+  const ex=saved.find(x=>x.nombre===n&&x.id!=="tmp"); if(ex){ ex.legs=clone(S.builder); ex.hz=BHZ } else saved.push({id:"s"+Date.now(),nombre:n,legs:clone(S.builder),hz:BHZ});
   $("bMsg").textContent=LS.set("agro_estr_v1",saved.filter(x=>x.id!=="tmp"))?`Guardada: ${n}. Ya aparece en el simulador.`:"No se pudo guardar en este dispositivo.";
   renderBuilder();
 };
