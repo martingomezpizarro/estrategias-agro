@@ -167,9 +167,9 @@
   }
  },
  "nota": "Promedio ponderado por monto liquidado de las operaciones del día, por segmento (avalado por SGR, garantizado, no garantizado). Tasas nominales anuales.",
- "corte": "media",
+ "corte": "cierre",
  "cortes": {
-  "media": {
+  "cierre": {
    "hora": "15:37",
    "segmentos": {
     "cheque": {

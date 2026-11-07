@@ -156,7 +156,8 @@ def corte(now):
 def con_cortes(nuevo, path):
     """Guarda las tres fotos del día: si el archivo anterior es del mismo día operado, suma este corte."""
     now = dt.datetime.now(ART)
-    k = corte(now)
+    # Si el último día operado ya terminó (corrida nocturna, fin de semana), es el cierre de ese día.
+    k = "cierre" if nuevo.get("fecha") and nuevo["fecha"] < now.date().isoformat() else corte(now)
     cortes = {}
     try:
         with open(path, encoding="utf-8") as f:

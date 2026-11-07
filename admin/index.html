@@ -1809,13 +1809,13 @@ const MAV_CORTES=[["apertura","Apertura · 11 h"],["media","Media jornada · 14 
 function mavHTML(src){
   if(!TASAS||!TASAS.segmentos) return "";
   const cs=TASAS.cortes||{}, k=MAVC&&cs[MAVC]?MAVC:(TASAS.corte&&cs[TASAS.corte]?TASAS.corte:null), c=k?cs[k]:null, sg=c?c.segmentos:TASAS.segmentos;
-  const lbl=x=>x.charAt(0).toUpperCase()+x.slice(1).toLowerCase(), base=["avalado","garantizado","no garantizado"];
+  const nz=x=>x.toLowerCase().replace(/\s+/g,""), lbl=x=>{const t=x.replace(/([a-záéíóú])([A-ZÁÉÍÓÚ])/g,"$1 $2");return t.charAt(0).toUpperCase()+t.slice(1).toLowerCase()}, base=["avalado","garantizado","nogarantizado"];
   let h=`<div class="mbhead"><b>Cheques y pagarés · MAV</b><span class="mbbadge"><i></i>${dmy(TASAS.fecha)}${c?` · ${c.hora} h`:""}</span></div>`;
   const disp=MAV_CORTES.filter(([x])=>cs[x]);
   if(disp.length) h+=`<div class="mavcortes">${disp.map(([x,t])=>`<button data-mavc="${x}" aria-pressed="${x===k}">${t}</button>`).join("")}${disp.length<3?`<small>Los demás cortes del día todavía no se publicaron</small>`:""}</div>`;
   [["cheque","Cheques"],["pagare","Pagarés"]].forEach(([ins,nom])=>["$","USD"].forEach(mon=>{
     const m=sg[ins]&&sg[ins][mon]; if(!m) return;
-    const segs=Object.keys(m).sort((a,b)=>{const i=base.indexOf(a.toLowerCase()),j=base.indexOf(b.toLowerCase());return (i<0?9:i)-(j<0?9:j)});
+    const segs=Object.keys(m).sort((a,b)=>{const i=base.indexOf(nz(a)),j=base.indexOf(nz(b));return (i<0?9:i)-(j<0?9:j)});
     const pl=MAV_PLAZOS.filter(p=>segs.some(x=>(m[x].tramos||[]).some(t=>t.plazo===p)));
     const cell=t=>t?`<td class="n v">${fmt(t.tasa,1)}% <small>${t.operaciones} op.</small></td>`:`<td class="n">—</td>`;
     h+=`<div class="mbtbl"><table><thead><tr><th class="l">${nom} en ${mon==="$"?"pesos":"dólares"} <small>TNA</small></th>${segs.map(x=>`<th>${esc(lbl(x))}</th>`).join("")}</tr></thead><tbody>`
