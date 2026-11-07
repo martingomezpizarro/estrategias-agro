@@ -1141,7 +1141,7 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
     <p class="note" id="bMsg" role="status"></p>
   </div>
   <div class="sec">
-    <div class="sechead"><h3>Guardadas en esta tablet</h3></div>
+    <div class="sechead"><h3>Guardadas en este dispositivo</h3></div>
     <div class="list" id="savedList"></div>
   </div>
   <div class="sec"><div class="sechead"><h3>Detalle</h3></div><div class="list" id="bKpis"></div></div>
@@ -1273,7 +1273,7 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
       <label class="rowi" for="qAcc"><span class="main"><b>Apertura</b><span>Formulario de la ALyC</span></span><input id="qAcc" type="url"></label>
       <label class="rowi" for="qWa"><span class="main"><b>WhatsApp</b><span>Con código de país, sin +</span></span><input id="qWa" type="tel"></label>
     </div>
-    <button class="btn" id="qSave">Guardar en esta tablet</button>
+    <button class="btn" id="qSave">Guardar en este dispositivo</button>
     <p class="note" id="qMsg" role="status"></p>
     <p class="note">El QR 1 abre para cualquiera solo si la página está compartida con acceso público.</p>
   </div></details>
@@ -1357,7 +1357,7 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
   <div class="fscrim" id="fScrim"></div>
   <div class="frotate">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>
-    <h2>Girá la tablet</h2>
+    <h2>Girá el dispositivo</h2>
     <p>El gráfico se ve completo en horizontal, con las estrategias a un lado y tus números al otro.</p>
     <button class="btn" id="fPortrait">Seguir en vertical</button>
   </div>
@@ -2212,7 +2212,7 @@ $("bSave").onclick=()=>{
   if(!S.builder.length){$("bMsg").textContent="Agregá al menos una pata antes de guardar.";return}
   if(!n){$("bMsg").textContent="Poné un nombre para encontrarla en el simulador.";return}
   const ex=saved.find(x=>x.nombre===n&&x.id!=="tmp"); if(ex) ex.legs=clone(S.builder); else saved.push({id:"s"+Date.now(),nombre:n,legs:clone(S.builder)});
-  $("bMsg").textContent=LS.set("agro_estr_v1",saved.filter(x=>x.id!=="tmp"))?`Guardada: ${n}. Ya aparece en el simulador.`:"No se pudo guardar en esta tablet.";
+  $("bMsg").textContent=LS.set("agro_estr_v1",saved.filter(x=>x.id!=="tmp"))?`Guardada: ${n}. Ya aparece en el simulador.`:"No se pudo guardar en este dispositivo.";
   renderBuilder();
 };
 $("bUse").onclick=()=>{if(!S.builder.length)return;const t=saved.find(x=>x.id==="tmp");if(t)t.legs=clone(S.builder);else saved.push({id:"tmp",nombre:"En armado",legs:clone(S.builder)});S.estr="tmp";showTab("sim")};
@@ -2227,7 +2227,7 @@ $("mLive").onclick=()=>{SS.del("agro_manual");SS.del("agro_mkt_v1");MKT=clone(DE
 $("mReset").onclick=()=>{MKT=clone(DEF_MKT);SS.set("agro_mkt_v1",MKT);SS.set("agro_manual",true);renderMkt();renderCropSeg();priceStatus();$("mMsg").textContent="Precios de referencia fijados mientras esta pestaña siga abierta."};
 $("qClose").onclick=()=>{$("qrOverlay").hidden=true};
 $("qSave").onclick=()=>{contact.whatsapp=$("qWa").value.replace(/\D/g,"");contact.cuentaURL=$("qAcc").value.trim();contact.simURL=$("qUrl").value.trim();renderQR();
-  $("qMsg").textContent=LS.set("agro_contact_v1",contact)?"Guardado en esta tablet.":"No se pudo guardar en esta tablet.";renderCta()};
+  $("qMsg").textContent=LS.set("agro_contact_v1",contact)?"Guardado en este dispositivo.":"No se pudo guardar en este dispositivo.";renderCta()};
 
 
 /* ---------- Curva completa de A3 (A3 Live) ---------- */
