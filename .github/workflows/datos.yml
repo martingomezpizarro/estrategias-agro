@@ -1,9 +1,10 @@
 name: Actualizar datos de mercado
-# Tasas del MAV y precios pizarra de Rosario, en días hábiles.
+# Tasas del MAV (apertura, media jornada y cierre), pizarra de Rosario y parámetros, en días hábiles.
 on:
   schedule:
-    - cron: "23 13-22 * * 1-5"   # cada hora, de 10:23 a 19:23 (hora argentina)
-    - cron: "47 0 * * 2-6"       # 21:47, para tomar la pizarra que la BCR publica tarde
+    - cron: "0 14 * * 1-5"    # 11:00 hora argentina: apertura
+    - cron: "0 17 * * 1-5"    # 14:00: media jornada
+    - cron: "15 20 * * 1-5"   # 17:15: cierre
   workflow_dispatch:
 permissions:
   contents: write

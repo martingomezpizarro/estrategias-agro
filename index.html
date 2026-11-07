@@ -828,6 +828,11 @@ body.agpend .agtxt{visibility:hidden}
 .posbar button[aria-pressed="true"]{background:var(--field);border-color:var(--field);color:#fff}
 .posbar button[aria-pressed="true"] small{color:rgba(255,255,255,.8)}
 .posbar em{font-style:normal;flex-basis:100%;font-size:.8rem}
+/* Mercado: cortes del MAV */
+.mavcortes{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.mavcortes button{border:1px solid rgba(255,255,255,.18);background:transparent;color:#E8E4D6;font:600 .8rem var(--font-body);border-radius:999px;padding:5px 12px;cursor:pointer}
+.mavcortes button[aria-pressed="true"]{background:#E9DDBA;color:#141A0F;border-color:#E9DDBA}
+.mavcortes small{color:rgba(232,228,214,.6);font-size:.76rem}
 </style>
 
 <header class="appbar">
@@ -1797,6 +1802,29 @@ function renderBuilder(){
 
 /* ---------- Mercado ---------- */
 /* ---------- Pizarra de mercado ---------- */
+/* ---------- Cheques y pagarés del MAV: segmentos y cortes del día ---------- */
+let MAVC=null;
+const MAV_PLAZOS=["hasta 30 días","31 a 60 días","61 a 90 días","91 a 120 días","121 a 180 días","181 a 365 días"];
+const MAV_CORTES=[["apertura","Apertura · 11 h"],["media","Media jornada · 14 h"],["cierre","Cierre · 17:15 h"]];
+function mavHTML(src){
+  if(!TASAS||!TASAS.segmentos) return "";
+  const cs=TASAS.cortes||{}, k=MAVC&&cs[MAVC]?MAVC:(TASAS.corte&&cs[TASAS.corte]?TASAS.corte:null), c=k?cs[k]:null, sg=c?c.segmentos:TASAS.segmentos;
+  const lbl=x=>x.charAt(0).toUpperCase()+x.slice(1).toLowerCase(), base=["avalado","garantizado","no garantizado"];
+  let h=`<div class="mbhead"><b>Cheques y pagarés · MAV</b><span class="mbbadge"><i></i>${dmy(TASAS.fecha)}${c?` · ${c.hora} h`:""}</span></div>`;
+  const disp=MAV_CORTES.filter(([x])=>cs[x]);
+  if(disp.length) h+=`<div class="mavcortes">${disp.map(([x,t])=>`<button data-mavc="${x}" aria-pressed="${x===k}">${t}</button>`).join("")}${disp.length<3?`<small>Los demás cortes del día todavía no se publicaron</small>`:""}</div>`;
+  [["cheque","Cheques"],["pagare","Pagarés"]].forEach(([ins,nom])=>["$","USD"].forEach(mon=>{
+    const m=sg[ins]&&sg[ins][mon]; if(!m) return;
+    const segs=Object.keys(m).sort((a,b)=>{const i=base.indexOf(a.toLowerCase()),j=base.indexOf(b.toLowerCase());return (i<0?9:i)-(j<0?9:j)});
+    const pl=MAV_PLAZOS.filter(p=>segs.some(x=>(m[x].tramos||[]).some(t=>t.plazo===p)));
+    const cell=t=>t?`<td class="n v">${fmt(t.tasa,1)}% <small>${t.operaciones} op.</small></td>`:`<td class="n">—</td>`;
+    h+=`<div class="mbtbl"><table><thead><tr><th class="l">${nom} en ${mon==="$"?"pesos":"dólares"} <small>TNA</small></th>${segs.map(x=>`<th>${esc(lbl(x))}</th>`).join("")}</tr></thead><tbody>`
+      + pl.map(p=>`<tr><td class="l">${p}</td>${segs.map(x=>cell((m[x].tramos||[]).find(t=>t.plazo===p))).join("")}</tr>`).join("")
+      + `<tr class="sel"><td class="l">Todos los plazos <small>monto ${mon==="$"?"$":"USD"}</small></td>${segs.map(x=>`<td class="n v">${fmt(m[x].tasa,1)}% <small>${fmt(m[x].monto/(mon==="$"?1e6:1e3),1)} ${mon==="$"?"M":"mil"}</small></td>`).join("")}</tr></tbody></table></div>`;
+  }));
+  return h+src(`MAV · promedio ponderado por monto liquidado de las operaciones del día hasta cada corte, por segmento.`,
+    `Avalado: con aval de una SGR o fondo de garantía. Garantizado: con otra garantía (por ejemplo, endoso de una empresa listada). No garantizado: sin garantía, a riesgo del librador. Se toma de mav-sa.com.ar en tres cortes por día hábil: 11, 14 y 17:15 h. Tasas nominales anuales.`,"https://mav-sa.com.ar/");
+}
 function renderBoard(){
   const el=$("mboard"); if(!el) return;
   const live=A3.estado==="vivo", st=a3Label();
@@ -1827,9 +1855,10 @@ function renderBoard(){
   // Tasas
   h+=`<div class="mbhead"><b>Tasas</b></div><div class="mbtbl"><table><thead><tr><th class="l">Instrumento</th><th>Plazo</th><th>Tasa</th><th>Fuente</th></tr></thead><tbody>`;
   if(A3.caucion) h+=`<tr><td class="l">Caución en pesos</td><td class="n">1 día</td><td class="n v">${fmt(A3.caucion,1)}%</td><td class="n"><small>A3 · ${live?"en vivo":"cierre"}</small></td></tr>`;
-  if(TASAS){ (TASAS.echeqAvalado||[]).forEach(b=>h+=`<tr><td class="l">Cheque avalado en pesos</td><td class="n">${b.plazo}</td><td class="n v">${fmt(b.tasa,1)}%</td><td class="n"><small>MAV · ${dmy(TASAS.fecha)}</small></td></tr>`);
+  if(TASAS&&!TASAS.segmentos){ (TASAS.echeqAvalado||[]).forEach(b=>h+=`<tr><td class="l">Cheque avalado en pesos</td><td class="n">${b.plazo}</td><td class="n v">${fmt(b.tasa,1)}%</td><td class="n"><small>MAV · ${dmy(TASAS.fecha)}</small></td></tr>`);
     const u=TASAS.pagareUsdAvalado; if(u) h+=`<tr><td class="l">Pagaré avalado en USD</td><td class="n">varios</td><td class="n v">${fmt(u.tasa,1)}%</td><td class="n"><small>MAV · ${dmy(TASAS.fecha)}</small></td></tr>`; }
-  h+=`</tbody></table></div>`+src(`Caución: A3. Cheques y pagarés: MAV, promedio ponderado por monto de las operaciones avaladas por SGR del último día.`,`Las tasas del MAV las baja un proceso automático cada hora en días hábiles desde mav-sa.com.ar. Son tasas nominales anuales.`,"https://mav-sa.com.ar/");
+  h+=`</tbody></table></div>`+src(`Caución: A3, tasa a 1 día.`,`Caución bursátil en pesos a 1 día, tomada de A3 Live.`,"https://a3live.ar/");
+  h+=mavHTML(src);
   // Opciones
   h+=`<div class="mbhead"><b>Opciones · primas en USD/t</b><span class="mbbadge">${Object.keys(MKT.primas).length?"A3 donde hay cotización":"estimadas con Black-76 y volatilidad de Chicago"}</span></div><div class="mbopts">`;
   Object.entries(MKT.crops).forEach(([id,c])=>{
@@ -2348,6 +2377,7 @@ window.addEventListener("orientationchange",()=>setTimeout(()=>{
   if(!FOCUS) return; const f=$("focus"), wide=isWideLandscape();
   f.classList.toggle("noleft",!wide); f.classList.toggle("noright",!wide); syncFocusToggles(); fReflow();
 },250));
+$("mboard").addEventListener("click",e=>{ const b=e.target.closest("[data-mavc]"); if(!b) return; MAVC=b.dataset.mavc; renderBoard() });
 $("posBar").addEventListener("click",e=>{
   const b=e.target.closest("[data-pos]"); if(!b) return;
   setPos(S.crop,b.dataset.pos); renderCropSeg(); showTabSoft(CUR); renderOpps();

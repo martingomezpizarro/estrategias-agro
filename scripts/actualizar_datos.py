@@ -86,12 +86,14 @@ def parse_mav(page, today):
 
     echeq = rows_of(sws[0], "Avalado", "$")
     pag_usd = rows_of(sws[1], "Avalado", "USD")
-    if not echeq:
-        raise ValueError("sin operaciones de echeq avalados")
+    seg = segmentos(sws)
+    if not seg:
+        raise ValueError("sin operaciones de cheques ni pagarés")
+    primera = next(r for inst in seg.values() for mon in inst.values() for sg in mon.values() for r in [sg["_fila"]])
 
-    # Fecha operada: vencimiento menos plazo de la primera fila
+    # Fecha operada: vencimiento menos plazo de una fila
     d0 = None
-    p, _, _, vto = echeq[0]
+    p, _, _, vto = primera
     try:
         dd, mm = map(int, vto.split("/"))
         y = today.year + (1 if mm < today.month - 6 else 0)
@@ -114,8 +116,59 @@ def parse_mav(page, today):
         "pagareUsdAvalado": None if tu is None else {
             "tasa": round(tu, 2), "operaciones": len(pag_usd), "monto": round(wu),
             "min": min(r[1] for r in pag_usd), "max": max(r[1] for r in pag_usd)},
-        "nota": "Promedio ponderado por monto liquidado de las operaciones avaladas por SGR del día. Tasas nominales anuales.",
+        "segmentos": {i: {m: {k: {x: y for x, y in v.items() if x != "_fila"} for k, v in mm.items()} for m, mm in ii.items()} for i, ii in seg.items()},
+        "nota": "Promedio ponderado por monto liquidado de las operaciones del día, por segmento (avalado por SGR, garantizado, no garantizado). Tasas nominales anuales.",
     }
+
+
+def segmentos(sws):
+    """Todas las operaciones del día por instrumento (cheque, pagaré), moneda y segmento, con tramos de plazo."""
+    out = {}
+    for inst, tables in (("cheque", sws[0]), ("pagare", sws[1])):
+        grupos = {}
+        for t in tables:
+            for c in t:
+                m = re.match(r"(\d+)", c[0])
+                tasa, liq = num(c[4]), num(c[7])
+                if not m or tasa is None or not liq:
+                    continue
+                grupos.setdefault((c[5], c[9].strip() or "Otro"), []).append((int(m.group(1)), tasa, liq, c[1]))
+        for (mon, sg), rows in grupos.items():
+            t, w = wavg(rows)
+            tramos = []
+            for lo, hi, name in BUCKETS:
+                rr = [r for r in rows if lo <= r[0] <= hi]
+                tt, ww = wavg(rr)
+                if tt is not None:
+                    tramos.append({"plazo": name, "tasa": round(tt, 2), "operaciones": len(rr), "monto": round(ww)})
+            out.setdefault(inst, {}).setdefault(mon, {})[sg] = {
+                "tasa": round(t, 2), "operaciones": len(rows), "monto": round(w),
+                "min": min(r[1] for r in rows), "max": max(r[1] for r in rows), "tramos": tramos, "_fila": rows[0]}
+    return out
+
+
+def corte(now):
+    """Apertura (11 h), media jornada (14 h) o cierre (17:15 h), según la hora de la corrida."""
+    h = now.hour + now.minute / 60
+    return "apertura" if h < 12.5 else "media" if h < 15.75 else "cierre"
+
+
+def con_cortes(nuevo, path):
+    """Guarda las tres fotos del día: si el archivo anterior es del mismo día operado, suma este corte."""
+    now = dt.datetime.now(ART)
+    k = corte(now)
+    cortes = {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            viejo = json.load(f)
+        if viejo.get("fecha") == nuevo.get("fecha"):
+            cortes = viejo.get("cortes", {})
+    except Exception:
+        pass
+    cortes[k] = {"hora": now.strftime("%H:%M"), "segmentos": nuevo["segmentos"]}
+    nuevo["corte"] = k
+    nuevo["cortes"] = cortes
+    return nuevo
 
 
 # ---------------- BCR pizarra ----------------
@@ -260,7 +313,7 @@ def main():
     today = dt.datetime.now(ART).date()
     ok = True
     try:
-        save("tasas.json", parse_mav(get("https://mav-sa.com.ar/"), today))
+        save("tasas.json", con_cortes(parse_mav(get("https://mav-sa.com.ar/"), today), os.path.join(OUT, "tasas.json")))
     except Exception as e:
         ok = False
         print("MAV falló:", e, file=sys.stderr)

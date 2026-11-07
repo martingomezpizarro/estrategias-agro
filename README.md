@@ -38,9 +38,9 @@ Los márgenes de garantía son los de Argentina Clearing (Comunicación N° 563,
 
 ## Datos que se actualizan solos
 
-El workflow `.github/workflows/datos.yml` corre `scripts/actualizar_datos.py` cada hora en días hábiles y guarda en `datos/`:
+El workflow `.github/workflows/datos.yml` corre `scripts/actualizar_datos.py` tres veces por día hábil (11:00, 14:00 y 17:15, hora argentina; GitHub puede demorar unos minutos) y guarda en `datos/`:
 
-- `tasas.json`: tasas del MAV del último día operado (cheques electrónicos avalados en pesos por plazo y pagarés avalados en dólares), promedio ponderado por monto.
+- `tasas.json`: tasas del MAV del último día operado, promedio ponderado por monto: cheques y pagarés en pesos y en dólares, por segmento (avalado, garantizado, no garantizado) y por tramo de plazo. Guarda las tres fotos del día (`cortes`: apertura, media jornada y cierre); la app las muestra en la pestaña Mercado.
 - `spot.json`: precios pizarra de la Cámara Arbitral de Rosario (BCR), el disponible que se paga por operaciones reales.
 
 Si una fuente falla, quedan los datos anteriores. Se puede correr a mano desde la pestaña Actions → "Actualizar datos de mercado" → Run workflow.
