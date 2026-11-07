@@ -10,6 +10,8 @@ Series automáticas:
 - cbot, le: CME Group vía Yahoo Finance, cierre mensual del contrato más cercano.
   Soja, maíz y trigo pasados a USD/t; Live Cattle en centavos de dólar por libra.
 - stockCons: USDA FAS, PSD Online. Relación stock final / consumo mundial (%) por campaña.
+- pizarra.json: Cámara Arbitral de Cereales de Rosario (BCR), precio pizarra diario de soja, maíz, trigo,
+  girasol y sorgo desde 2003, pasado a USD con la Com. A 3500 del BCRA y promediado por mes.
 
 Solo usa la biblioteca estándar.
 """
@@ -159,6 +161,144 @@ def psd():
     return res
 
 
+
+# ---------------- Pizarra de Rosario (Cámara Arbitral, BCR) ----------------
+PIZ_OUT = os.path.join(ROOT, "pizarra.json")
+PIZ_PROD = {"soja": 13, "maiz": 3, "trigo": 8, "girasol": 9, "sorgo": 6}
+PIZ_DESDE = "2003-01-01"
+
+
+def xlsx_rows(b):
+    """Filas de la primera hoja de un .xlsx como listas de valores (texto o número)."""
+    z = zipfile.ZipFile(io.BytesIO(b))
+    ss = []
+    if "xl/sharedStrings.xml" in z.namelist():
+        x = z.read("xl/sharedStrings.xml").decode("utf-8")
+        ss = [re.sub(r"<[^>]+>", "", m) for m in re.findall(r"<si>(.*?)</si>", x, re.S)]
+    sh = sorted(n for n in z.namelist() if n.startswith("xl/worksheets/sheet") and n.endswith(".xml"))[0]
+    x = z.read(sh).decode("utf-8")
+    out = []
+    for row in re.findall(r"<row[^>]*>(.*?)</row>", x, re.S):
+        vals = []
+        for attrs, inner in re.findall(r"<c([^>]*?)(?:/>|>(.*?)</c>)", row, re.S):
+            v = re.search(r"<v>(.*?)</v>", inner or "", re.S)
+            t = re.search(r'\bt="(\w+)"', attrs)
+            if t and t.group(1) == "s" and v:
+                vals.append(ss[int(v.group(1))])
+            elif t and t.group(1) == "inlineStr":
+                vals.append(re.sub(r"<[^>]+>", "", inner or ""))
+            elif v:
+                try:
+                    vals.append(float(v.group(1)))
+                except ValueError:
+                    vals.append(v.group(1))
+            else:
+                vals.append("")
+        out.append(vals)
+    return out
+
+
+def a_fecha(v):
+    if isinstance(v, float) and 30000 < v < 80000:  # número de serie de Excel
+        return (dt.date(1899, 12, 30) + dt.timedelta(days=int(v))).isoformat()
+    m = re.match(r"\s*(\d{1,2})/(\d{1,2})/(\d{4})", str(v))
+    if m:
+        return f"{m.group(3)}-{int(m.group(2)):02d}-{int(m.group(1)):02d}"
+    m = re.match(r"\s*(\d{4})-(\d{2})-(\d{2})", str(v))
+    return m.group(0).strip() if m else None
+
+
+def a_num(v):
+    if isinstance(v, float):
+        return v
+    s = str(v).replace("$", "").replace(" ", "").strip()
+    if not re.search(r"\d", s):
+        return None
+    if "," in s:
+        s = s.replace(".", "").replace(",", ".")
+    try:
+        return float(s)
+    except ValueError:
+        return None
+
+
+def pizarra_bcr(prod, hasta):
+    url = ("https://www.cac.bcr.com.ar/es/api/prices/987/export"
+           f"?product={prod}&type=any&date_start={PIZ_DESDE}&date_end={hasta}&period=day")
+    res = {}
+    for r in xlsx_rows(get(url, timeout=180, binary=True)):
+        f = next((a_fecha(c) for c in r if a_fecha(c)), None)
+        if not f:
+            continue
+        nums = [a_num(c) for c in r[1:] if a_num(c) is not None and a_fecha(c) is None]
+        if not nums or nums[-1] <= 0:
+            continue
+        res[f] = (nums[-1], any(str(c).strip() == "(E)" for c in r))
+    if len(res) < 100:
+        raise ValueError(f"producto {prod}: solo {len(res)} precios")
+    return res
+
+
+def a3500_hist(desde, hasta):
+    """Com. A 3500 diaria (BCRA, variable 5), año por año."""
+    res = {}
+    for y in range(int(desde[:4]), int(hasta[:4]) + 1):
+        d1, d2 = max(desde, f"{y}-01-01"), min(hasta, f"{y}-12-31")
+        j = None
+        for v in ("v4.0", "v3.0"):
+            try:
+                j = json.loads(get(f"https://api.bcra.gob.ar/estadisticas/{v}/monetarias/5?desde={d1}&hasta={d2}&limit=3000", timeout=60))
+                break
+            except Exception as e:
+                err = e
+        if j is None:
+            raise err
+        rs = j.get("results", [])
+        rs = [rs] if isinstance(rs, dict) else rs
+        for x in rs:
+            if isinstance(x, dict) and "fecha" in x and "valor" in x:
+                res[x["fecha"][:10]] = float(x["valor"])
+            for d in (x.get("detalle") or []) if isinstance(x, dict) else []:
+                res[d["fecha"][:10]] = float(d["valor"])
+    if len(res) < 1000:
+        raise ValueError(f"A3500: solo {len(res)} cotizaciones")
+    return res
+
+
+def pizarra():
+    hoy = dt.datetime.now(ART).date().isoformat()
+    tc = a3500_hist(PIZ_DESDE, hoy)
+    tcf = sorted(tc)
+    import bisect
+    def tc_de(f):
+        i = bisect.bisect_right(tcf, f) - 1
+        return tc[tcf[i]] if i >= 0 else None
+    out = {"fuente": "Cámara Arbitral de Cereales de Rosario (BCR): precio pizarra o, si no hubo, estimativo",
+           "tc": "BCRA, Comunicación A 3500 del mismo día", "url": "https://www.cac.bcr.com.ar/es/precios-de-pizarra/consultas",
+           "actualizado": hoy, "ultimo": {}, "mensual": {}}
+    for g, prod in PIZ_PROD.items():
+        try:
+            px = pizarra_bcr(prod, hoy)
+        except Exception as e:
+            print(f"pizarra {g} falló: {e}", file=sys.stderr)
+            continue
+        mes = {}
+        for f, (ars, est) in sorted(px.items()):
+            t = tc_de(f)
+            if not t:
+                continue
+            usd = ars / t
+            if not 30 < usd < 2000:  # precio o tipo de cambio fuera de rango: se descarta
+                continue
+            mes.setdefault(f[:7], []).append(usd)
+            out["ultimo"][g] = {"fecha": f, "ars": ars, "usd": round(usd, 1), "tc": t, "estimativo": est}
+        out["mensual"][g] = [[m, round(sum(v) / len(v), 1)] for m, v in sorted(mes.items())]
+        LOG.append(f"Pizarra {g}: {len(px)} días, {out['mensual'][g][0][0]} a {out['ultimo'][g]['fecha']}")
+    if not out["mensual"]:
+        raise ValueError("ningún grano")
+    with open(PIZ_OUT, "w", encoding="utf-8") as f:
+        json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
+
 def ckey(k):
     """Orden cronológico: campañas '04/05' (siglo según el año) y meses '2026-10'."""
     m = re.match(r"^(\d{2})/(\d{2})$", str(k))
@@ -227,6 +367,7 @@ def main():
     step("sagyp", do_sagyp)
     step("cme", do_cme)
     step("usda", do_psd)
+    step("pizarra", pizarra)
     for l in LOG:
         print(l)
     if not fuentes:

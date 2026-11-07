@@ -1,0 +1,22 @@
+name: Sondeo BCR (temporal)
+on:
+  push:
+    branches: [sondeo-bcr]
+jobs:
+  sondeo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: |
+          python - <<'PY'
+          import sys,json; sys.path.insert(0,"scripts")
+          import actualizar_estadisticas as A
+          A.pizarra()
+          for l in A.LOG: print(l)
+          d=json.load(open("pizarra.json"))
+          print(json.dumps(d["ultimo"],ensure_ascii=False))
+          for g,s in d["mensual"].items(): print(g,len(s),s[:2],s[-3:])
+          import os; print("bytes",os.path.getsize("pizarra.json"))
+          PY
