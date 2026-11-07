@@ -1,5 +1,5 @@
 name: Actualizar estadísticas (semanal)
-# Pestaña Datos: Secretaría de Agricultura, CME (Yahoo Finance) y USDA PSD.
+# Pestaña Datos: Secretaría de Agricultura, CME (Yahoo Finance), USDA PSD y pizarra de Rosario (BCR).
 on:
   schedule:
     - cron: "17 11 * * 1"   # lunes 8:17, hora argentina
@@ -21,10 +21,10 @@ jobs:
         run: python scripts/actualizar_estadisticas.py || echo "ninguna fuente respondió; se conservan los datos anteriores"
       - name: Guardar si cambió
         run: |
-          if [ -n "$(git status --porcelain estadisticas.json)" ]; then
+          if [ -n "$(git status --porcelain estadisticas.json pizarra.json)" ]; then
             git config user.name "agro-datos[bot]"
             git config user.email "agro-datos@users.noreply.github.com"
-            git add estadisticas.json
+            git add estadisticas.json pizarra.json
             git commit -m "Estadísticas semanales: $(TZ=America/Argentina/Buenos_Aires date '+%d/%m/%Y')"
             git pull --rebase
             git push

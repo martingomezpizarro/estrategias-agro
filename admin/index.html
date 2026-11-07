@@ -2026,12 +2026,34 @@ function stProdCard(id, nombre){
     "Fuente: Secretaría de Agricultura (Indicadores de evolución del sector agropecuario), campañas 04/05 a 25/26. Barra rayada: proyección 26/27 de la Bolsa de Cereales de Buenos Aires (23/9/2026). La SAGyP y la Bolsa usan metodologías distintas: sus cifras de una misma campaña no coinciden.");
 }
 
+/* ---------- Pizarra de Rosario en USD (pizarra.json, robot semanal) ---------- */
+let PIZ=null;
+async function loadPizarra(){
+  if(!/^https?:$/.test(location.protocol)) return;
+  try{ const r=await fetch("pizarra.json",{cache:"no-store"}); if(r.ok){ PIZ=await r.json(); if(!$("v-stats").hidden) renderStats() } }catch(e){}
+}
+const pizSerie=id=>PIZ&&PIZ.mensual&&PIZ.mensual[id]&&PIZ.mensual[id].length?PIZ.mensual[id]:null;
+function pizTile(id){
+  const u=PIZ&&PIZ.ultimo&&PIZ.ultimo[id]; if(!u) return "";
+  return tile(`Pizarra Rosario · ${dmy(u.fecha)}`,fmt(u.usd,0),"USD/t",`$ ${fmt(u.ars,0)}/t al A3500 $ ${fmt(u.tc,2)}${u.estimativo?" · estimativo":""}`);
+}
+const pizSrc=()=>`Fuente: Cámara Arbitral de Cereales de Rosario (BCR), precio pizarra diario o, si ese día no hubo, estimativo; promedio mensual en USD con el tipo de cambio Com. A 3500 del BCRA de cada día. <a href="${PIZ.url}" target="_blank" rel="noopener">Ver en la BCR</a>. Actualizado el ${dmy(PIZ.actualizado)}.`;
+function pizHistCard(id,nombre){
+  const d=pizSerie(id); if(!d) return "";
+  const mx=d.reduce((a,b)=>b[1]>a[1]?b:a), mn=d.reduce((a,b)=>b[1]<a[1]?b:a), l=last(d), y1=d.find(x=>x[0]===String(+l[0].slice(0,4)-1)+l[0].slice(4));
+  return card(`${nombre} en Rosario desde ${d[0][0].slice(0,4)}`,
+    `Lo que se pagó la tonelada disponible en Rosario, en dólares oficiales. ${ym(l[0])}: USD ${fmt(l[1],0)}/t${y1?` (${sgnPct(pct(l[1],y1[1]))} en 12 meses)`:""}. Máximo de la serie: USD ${fmt(mx[1],0)} en ${ym(mx[0])}; mínimo: USD ${fmt(mn[1],0)} en ${ym(mn[0])}.`,
+    {type:"line",series:[{name:"USD/t",data:d}],fmt:v=>"USD "+fmt(v,0),zero:false,xname:"Mes",aria:`Precio pizarra de ${nombre.toLowerCase()} en Rosario`,xn:8},
+    pizSrc());
+}
+
 function stGrain(id){
   const nombre=RUB.find(r=>r.id===id).n, c=MKT.crops[id], cb=STATS.cbot[id], cl=last(cb), y1=cb.find(d=>d[0]===String(+cl[0].slice(0,4)-1)+cl[0].slice(4))||cb[cb.length-13];
   const sc=STATS.stockCons[id], scl=last(sc), v=STATS.ventas[id];
   const minSc=sc.slice(0,-1).reduce((a,b)=>b[1]<a[1]?b:a), maxSc=sc.slice(0,-1).reduce((a,b)=>b[1]>a[1]?b:a);
   const tiles=[
     c?tile(`Futuro A3 · ${esc(c.pos.replace(/^\S+ Rosario /,""))}`,fmt(c.F,0),"USD/t",(A3.estado==="vivo"&&!isManual())?"en vivo":(A3.estado==="cierre"?"cierre ":"guardado ")+new Date(MKT.fecha+"T12:00:00").toLocaleDateString("es-AR",{day:"numeric",month:"short"})):"",
+    pizTile(id),
     tile(`Chicago · ${ym(cl[0])}`,fmt(cl[1],0),"USD/t",`${sgnPct(pct(cl[1],y1[1]))} en 12 meses`),
     tile("Cosecha 25/26 (Bolsa)",fmt(STATS.bcba2526[id],1),"Mt",""),
     tile("Proyección 26/27",fmt(STATS.proy[id],1),"Mt",`${sgnPct(pct(STATS.proy[id],STATS.bcba2526[id]))} vs 25/26`),
@@ -2045,10 +2067,21 @@ function stGrain(id){
   const mb=STATS.margen[id]||[];
   let h=`<div class="stgrid">${tiles}</div>`;
   h+=stProdCard(id,nombre);
+  const pz=pizSerie(id);
+  if(pz){
+    const pm=Object.fromEntries(pz), ros=cb.map(d=>[d[0],pm[d[0]]??null]), com=cb.filter(d=>pm[d[0]]!=null), lc=last(com);
+    const gap=lc?(1-pm[lc[0]]/lc[1])*100:null;
+    h+=card(`Rosario y Chicago: ${nombre.toLowerCase()}`,
+      lc?`En ${ym(lc[0])} la tonelada se pagó USD ${fmt(pm[lc[0]],0)} en Rosario y USD ${fmt(lc[1],0)} en Chicago: ${fmt(gap,0)}% menos. Esa diferencia son las retenciones, el flete y los gastos de exportación, y cambia con el tiempo.`:"",
+      {type:"line",series:[{name:"Pizarra Rosario",data:ros,color:STC.one},{name:"Chicago",data:cb,color:STC.a,dash:true}],fmt:v=>"USD "+fmt(v,0),zero:false,xname:"Mes",aria:`Precio de ${nombre.toLowerCase()} en Rosario y en Chicago`},
+      `Rosario: pizarra de la Cámara Arbitral (BCR) en USD al A3500, promedio mensual. Chicago: CME Group vía Yahoo Finance, cierre mensual del contrato más cercano (${id==="maiz"?"ZC":id==="soja"?"ZS":"ZW"}). Faltan algunos meses en la serie de Chicago.`);
+    h+=pizHistCard(id,nombre);
+  } else {
   h+=card(`Precio internacional: ${nombre.toLowerCase()}`,
     `Futuro más cercano en Chicago, convertido a USD por tonelada. Hoy USD ${fmt(cl[1],0)}/t, ${sgnPct(pct(cl[1],y1[1]))} contra ${ym(y1[0])}.`,
     {type:"line",series:[{name:"USD/t",data:cb}],fmt:v=>"USD "+fmt(v,0),zero:false,xname:"Mes",aria:"Precio en Chicago"},
     `Fuente: CME Group vía Yahoo Finance, cierre mensual del contrato más cercano (${id==="maiz"?"ZC":id==="soja"?"ZS":"ZW"}), al ${new Date(STATS.fecha+"T12:00:00").toLocaleDateString("es-AR")}. Faltan algunos meses en la serie de origen.`);
+  }
   h+=card("Stock final / consumo mundial", scTake,
     {type:"bar",series:[{name:"% del consumo",data:sc,proj:[last(sc)[0]]}],fmt:v=>fmt(v,1)+"%",xname:"Campaña",aria:"Relación stock consumo mundial"},
     "Fuente: USDA, en la clase de comercialización de AgroEducación (Ing. Agr. Marianela De Emilio, 25/9/2026). Barra rayada: proyección 26/27.");
@@ -2092,9 +2125,10 @@ function stGirasol(){
     tile("Cosecha 25/26 (Bolsa)",fmt(STATS.bcba2526.girasol,1),"Mt","récord histórico"),
     tile("Proyección 26/27",fmt(STATS.proy.girasol,1),"Mt","Bolsa de Cereales"),
     tile("Área 26/27",fmt(last(a)[1],1),"M ha","intención de siembra"),
-    gp?tile(`Pizarra ${esc(gp.plaza||"Rosario")}`,fmt(gp.precio,0),gp.unidad||"USD/t",gp.fecha||""):""
+    pizTile("girasol")||(gp?tile(`Pizarra ${esc(gp.plaza||"Rosario")}`,fmt(gp.precio,0),gp.unidad||"USD/t",gp.fecha||""):"")
   ].join("")}</div>`;
   h+=stProdCard("girasol","Girasol");
+  h+=pizHistCard("girasol","Girasol");
   h+=card("Área sembrada de girasol",
     `En las últimas campañas el área creció fuerte: para la 26/27 se proyectan ${fmt(last(a)[1],1)} millones de hectáreas, más del doble que en 13/14.`,
     {type:"bar",series:[{name:"Millones de ha",data:a,proj:["26/27"]}],fmt:v=>fmt(v,2)+" M ha",xname:"Campaña",aria:"Área sembrada de girasol",xn:6},
@@ -2795,7 +2829,7 @@ $("disc").textContent="Simulación ilustrativa con precios de referencia. No con
   try{ setTicker(localStorage.getItem("agro_tk")!=="0") }catch(e){ setTicker(true) }
   $("tkHide").onclick=()=>setTicker(false); $("tkShow").onclick=()=>setTicker(true);
   renderTicker(); loadSpot(); loadTasas(); loadParams(); setInterval(loadParams,60*60*1000); setInterval(loadSpot,30*60*1000); setInterval(loadTasas,30*60*1000);
-  priceStatus(); loadLive(); loadPrimas(); setInterval(loadPrimas,10*60*1000); a3Live(); setInterval(a3Live,5*60*1000); setInterval(loadLive, 10*60*1000); loadStats(); setInterval(loadStats, 60*60*1000);
+  priceStatus(); loadLive(); loadPrimas(); setInterval(loadPrimas,10*60*1000); a3Live(); setInterval(a3Live,5*60*1000); setInterval(loadLive, 10*60*1000); loadStats(); setInterval(loadStats, 60*60*1000); loadPizarra();
   if(window.claude&&window.claude.use) window.claude.use("downloads").then(d=>{if(d)DL=d}).catch(()=>{});
 })();
 </script>
