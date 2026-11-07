@@ -627,9 +627,8 @@ details.cfg[open]{padding-bottom:14px}
   #stBody>.photo,#stBody>.stgrid,#stBody>.stnote,#stBody>.disc{grid-column:1/-1}
   .contactsec .cgrid,.contactsec .steps3{max-width:1000px}
   .cform{max-width:760px}
-  #v-qr{display:none}
-  body.admin #v-qr{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
-  body.admin #v-qr>:not(.card){grid-column:1/-1}
+  #v-qr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+  #v-qr>:not(.card){grid-column:1/-1}
   .sitefoot{max-width:1240px}
 }
 @media (min-width:1500px){.app,.appbar-in,.topnav,.hero-in{max-width:1360px}}
@@ -652,7 +651,8 @@ details.cfg[open]{padding-bottom:14px}
 .cfbtns .btn{gap:8px}.cfbtns svg{width:20px;height:20px}
 @media (max-width:420px){.cfbtns{grid-template-columns:1fr}}
 .adminonly{display:none!important}
-body.admin #v-qr{display:flex!important}
+body.admin .adminonly{display:revert!important}
+body.admin .agpanel.adminonly,body.admin .adminbadge.adminonly{display:flex!important}
 .adminbadge{align-self:flex-start;font:600 .78rem var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--field-d);background:var(--field-l);padding:6px 12px;border-radius:999px}
 /* explicación paso a paso */
 .howto{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:14px}
@@ -879,6 +879,7 @@ body.agpend .agtxt{visibility:hidden}
   <button data-tab="mkt" class="sub adv-only">Mercado</button>
   <button data-tab="stats" class="sub">Datos del agro</button>
   <a href="#contacto" data-sn="contacto"><i>4</i>Abrí tu cuenta</a>
+  <a href="#v-qr" class="sub">Códigos QR</a>
 </aside>
 
 <section class="hero" id="historia">
@@ -1267,10 +1268,10 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
   </ol>
 
 <!-- ================= QR ================= -->
-<section class="screen adminonly" id="v-qr">
-  <p class="adminbadge">Modo administrador · solo vos ves esta parte</p>
+<section class="screen" id="v-qr">
+  <p class="adminbadge adminonly">Modo administrador · el panel de agentes y la configuración solo los ves vos</p>
   <div class="sec" style="gap:6px"><h2 class="ltitle">Escaneá desde tu celular</h2><p class="muted">Uno abre esta página, otro la apertura de cuenta y el tercero un chat de WhatsApp. Se descargan en PDF para imprimir en el stand.</p></div>
-  <div class="agpanel" id="agPanel">
+  <div class="agpanel adminonly" id="agPanel">
     <div class="sechead"><h3>Agentes y links</h3><span id="agCount"></span></div>
     <p class="muted">Cada agente tiene su propio link. Quien entra por ese link ve el nombre, el WhatsApp, el mail, la ALyC y la apertura de cuenta de ese agente, y los mensajes del formulario le llegan a él. Con "Armar QR" los tres QR de abajo y sus PDF quedan con los datos de ese agente.</p>
     <div class="aglist" id="agList"></div>
@@ -1316,7 +1317,7 @@ costo en USD (granos) = F futuro / F hoy − 1 − almacenaje / F hoy</div>
   </div>
   <button class="btn gold block dl-btn" data-pdf="both">Descargar los tres en un PDF</button>
   <p class="note" id="dlMsg" role="status"></p>
-  <details class="cfg"><summary>Configurar links de los QR (asesor)</summary><div class="sec">
+  <details class="cfg adminonly"><summary>Configurar links de los QR (asesor)</summary><div class="sec">
     <div class="list">
       <label class="rowi" for="qUrl"><span class="main"><b>Simulador</b><span>agro.martingomezpizarro.com.ar</span></span><input id="qUrl" type="url"></label>
       <label class="rowi" for="qAcc"><span class="main"><b>Apertura</b><span>Formulario de la ALyC</span></span><input id="qAcc" type="url"></label>
@@ -2794,7 +2795,8 @@ function renderAgent(){
   $("brandWho").textContent=AGENTE.nombre+" · "+(AGENTE.rol.split("·")[0].trim()||"Agente productor");
   document.querySelectorAll(".alycName").forEach(e=>e.textContent=AGENTE.alyc||"una ALyC");
   renderContact(); try{renderCta()}catch(e){} try{composeMsg()}catch(e){}
-  if(document.body.classList.contains("admin")){ try{renderQR()}catch(e){} try{renderAgAdmin()}catch(e){} }
+  try{renderQR()}catch(e){}
+  if(document.body.classList.contains("admin")){ try{renderAgAdmin()}catch(e){} }
   document.body.classList.remove("agpend");
 }
 async function loadAgentes(){
