@@ -11,7 +11,8 @@ Series automáticas:
   Soja, maíz y trigo pasados a USD/t; Live Cattle en centavos de dólar por libra.
 - stockCons: USDA FAS, PSD Online. Relación stock final / consumo mundial (%) por campaña.
 - pizarra.json: Cámara Arbitral de Cereales de Rosario (BCR), precio pizarra diario de soja, maíz, trigo,
-  girasol y sorgo desde 2003, pasado a USD con la Com. A 3500 del BCRA y promediado por mes.
+  girasol y sorgo desde 2003, pasado a USD con la Com. A 3500 del BCRA y promediado por mes. Cada semana
+  baja solo desde el mes anterior al último guardado; el histórico completo se arma una sola vez.
 
 Solo usa la biblioteca estándar.
 """
@@ -222,9 +223,9 @@ def a_num(v):
         return None
 
 
-def pizarra_bcr(prod, hasta):
+def pizarra_bcr(prod, desde, hasta):
     url = ("https://www.cac.bcr.com.ar/es/api/prices/987/export"
-           f"?product={prod}&type=any&date_start={PIZ_DESDE}&date_end={hasta}&period=day")
+           f"?product={prod}&type=any&date_start={desde}&date_end={hasta}&period=day")
     res = {}
     for r in xlsx_rows(get(url, timeout=180, binary=True)):
         f = next((a_fecha(c) for c in r if a_fecha(c)), None)
@@ -234,8 +235,8 @@ def pizarra_bcr(prod, hasta):
         if not nums or nums[-1] <= 0:
             continue
         res[f] = (nums[-1], any(str(c).strip() == "(E)" for c in r))
-    if len(res) < 100:
-        raise ValueError(f"producto {prod}: solo {len(res)} precios")
+    if not res:
+        raise ValueError(f"producto {prod}: sin precios desde {desde}")
     return res
 
 
@@ -260,14 +261,32 @@ def a3500_hist(desde, hasta):
                 res[x["fecha"][:10]] = float(x["valor"])
             for d in (x.get("detalle") or []) if isinstance(x, dict) else []:
                 res[d["fecha"][:10]] = float(d["valor"])
-    if len(res) < 1000:
-        raise ValueError(f"A3500: solo {len(res)} cotizaciones")
+    if not res:
+        raise ValueError(f"A3500: sin cotizaciones desde {desde}")
     return res
 
 
 def pizarra():
+    """Incremental: solo baja desde el mes anterior al último guardado (ese mes y el corriente se
+    recalculan completos por si la BCR corrige un precio). Sin pizarra.json, arma todo desde 2003."""
     hoy = dt.datetime.now(ART).date().isoformat()
-    tc = a3500_hist(PIZ_DESDE, hoy)
+    old = {}
+    if os.path.exists(PIZ_OUT):
+        with open(PIZ_OUT, encoding="utf-8") as f:
+            old = json.load(f)
+    om = old.get("mensual", {})
+
+    def desde_de(g):
+        s = om.get(g)
+        if not s:
+            return PIZ_DESDE
+        y, m = int(s[-1][0][:4]), int(s[-1][0][5:7]) - 1
+        if m == 0:
+            y, m = y - 1, 12
+        return f"{y}-{m:02d}-01"
+
+    desdes = {g: desde_de(g) for g in PIZ_PROD}
+    tc = a3500_hist(min(desdes.values()), hoy)
     tcf = sorted(tc)
     import bisect
     def tc_de(f):
@@ -275,10 +294,11 @@ def pizarra():
         return tc[tcf[i]] if i >= 0 else None
     out = {"fuente": "Cámara Arbitral de Cereales de Rosario (BCR): precio pizarra o, si no hubo, estimativo",
            "tc": "BCRA, Comunicación A 3500 del mismo día", "url": "https://www.cac.bcr.com.ar/es/precios-de-pizarra/consultas",
-           "actualizado": hoy, "ultimo": {}, "mensual": {}}
+           "actualizado": hoy, "ultimo": dict(old.get("ultimo", {})), "mensual": {g: list(v) for g, v in om.items()}}
     for g, prod in PIZ_PROD.items():
+        d0 = desdes[g]
         try:
-            px = pizarra_bcr(prod, hoy)
+            px = pizarra_bcr(prod, d0, hoy)
         except Exception as e:
             print(f"pizarra {g} falló: {e}", file=sys.stderr)
             continue
@@ -292,10 +312,12 @@ def pizarra():
                 continue
             mes.setdefault(f[:7], []).append(usd)
             out["ultimo"][g] = {"fecha": f, "ars": ars, "usd": round(usd, 1), "tc": t, "estimativo": est}
-        out["mensual"][g] = [[m, round(sum(v) / len(v), 1)] for m, v in sorted(mes.items())]
-        LOG.append(f"Pizarra {g}: {len(px)} días, {out['mensual'][g][0][0]} a {out['ultimo'][g]['fecha']}")
-    if not out["mensual"]:
-        raise ValueError("ningún grano")
+        nuevos = [[m, round(sum(v) / len(v), 1)] for m, v in sorted(mes.items())]
+        viejos = [x for x in out["mensual"].get(g, []) if x[0] < d0[:7]]
+        out["mensual"][g] = viejos + nuevos
+        LOG.append(f"Pizarra {g}: {len(px)} días nuevos desde {d0}, último {out['ultimo'][g]['fecha']}")
+    if out == {**old, "actualizado": hoy}:
+        return
     with open(PIZ_OUT, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
 
