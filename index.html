@@ -821,6 +821,13 @@ body.agpend .agtxt{visibility:hidden}
 .infcard b{font-family:var(--font-display);font-size:1.08rem;line-height:1.2}
 .infcard .infd{font-size:.86rem;color:var(--muted);flex:1}
 .infcard .infft{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.76rem;color:var(--field);font-weight:600;border-top:1px solid var(--line);padding-top:8px;margin-top:4px}
+/* Simulador: posición A3 elegible */
+.posbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.84rem;color:var(--faint);margin-top:-4px}
+.posbar button{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 .86rem var(--font-body);border-radius:999px;padding:6px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:baseline;min-height:36px}
+.posbar button small{font-weight:500;color:var(--faint);font-size:.78rem}
+.posbar button[aria-pressed="true"]{background:var(--field);border-color:var(--field);color:#fff}
+.posbar button[aria-pressed="true"] small{color:rgba(255,255,255,.8)}
+.posbar em{font-style:normal;flex-basis:100%;font-size:.8rem}
 </style>
 
 <header class="appbar">
@@ -939,6 +946,7 @@ body.agpend .agtxt{visibility:hidden}
   
 
   <div class="grains" id="cropSeg" role="group" aria-label="Cultivo"></div>
+  <div class="posbar" id="posBar" role="group" aria-label="Posición A3"></div>
   <p class="pstat" id="pStat"></p>
 
   <div class="sec skycard" style="gap:14px">
@@ -1728,6 +1736,22 @@ function renderCta(){
 function renderCropSeg(){
   document.body.dataset.grain=S.crop;
   $("cropSeg").innerHTML=cropPillsHTML();
+  renderPosBar();
+}
+// Posición A3 con la que se simula: la elige el productor (cosecha, un mes posterior, etc.).
+function setPos(id,code){
+  const t=MKT.crops[id]; if(!t||!code) return;
+  A3COS[id]=code; t.tk=A3PRE[id]+"/"+code; t.pos=`${t.nombre} Rosario ${code}`;
+  const F=a3P(id,code); if(F>0) t.F=F;
+  t.venc=futVenc(code); t.ov=optVenc(code);
+}
+function renderPosBar(){
+  const el=$("posBar"); if(!el) return;
+  const id=S.crop, c=MKT.crops[id], cur=c.tk.split("/")[1], ps=a3Pos(id); if(!ps.includes(cur)) ps.push(cur);
+  ps.sort((a,b)=>codeEnd(a)-codeEnd(b));
+  const hoy=artNow().iso, optOk=c.ov>=hoy;
+  el.innerHTML=`<span>Contrato:</span>`+ps.map(p=>`<button data-pos="${p}" aria-pressed="${p===cur}">${p}<small>${fmt(a3P(id,p)||(p===cur?c.F:0),1)}</small></button>`).join("")
+    +`<em>${c.tk}: futuro vence el ${dmy(c.venc)}${optOk?`, opciones el ${dmy(c.ov)}`:`. Sus opciones ya vencieron (${dmy(c.ov)}): usá futuros`}</em>`;
 }
 function syncInputs(){
   const set=(id,v)=>{const el=$(id); if(el&&el!==document.activeElement) el.value=v};
@@ -2324,6 +2348,10 @@ window.addEventListener("orientationchange",()=>setTimeout(()=>{
   if(!FOCUS) return; const f=$("focus"), wide=isWideLandscape();
   f.classList.toggle("noleft",!wide); f.classList.toggle("noright",!wide); syncFocusToggles(); fReflow();
 },250));
+$("posBar").addEventListener("click",e=>{
+  const b=e.target.closest("[data-pos]"); if(!b) return;
+  setPos(S.crop,b.dataset.pos); renderCropSeg(); showTabSoft(CUR); renderOpps();
+});
 $("legsTbl").addEventListener("change",e=>{
   const el=e.target,l=S.builder[+el.dataset.i],c=crop(); if(!l) return;
   if(el.dataset.f==="side")l.side=+el.value;
@@ -2859,7 +2887,7 @@ function splitCols(root){
   const R=document.createElement("div"); R.className="colR";
   const wrap=document.createElement("div"); wrap.className="cols";
   [...root.children].forEach(k=>{
-    if(k.classList.contains("grains")||k.classList.contains("tsub")||k.classList.contains("banner")||k.classList.contains("ltitle")||k.classList.contains("pstat")||k.id==="tGranos"||k.id==="tDolar") return;
+    if(k.classList.contains("grains")||k.classList.contains("tsub")||k.classList.contains("banner")||k.classList.contains("ltitle")||k.classList.contains("pstat")||k.classList.contains("posbar")||k.id==="tGranos"||k.id==="tDolar") return;
     (k.classList.contains("skycard")||k.classList.contains("soft")?L:R).appendChild(k);
   });
   if(!L.children.length){ [...R.children].forEach(k=>root.appendChild(k)); return }
