@@ -1,7 +1,7 @@
 {
  "fuente": "MAV, Datos de Mercado (mav-sa.com.ar)",
  "fecha": "2026-11-06",
- "actualizado": "2026-11-07T15:37-03:00",
+ "actualizado": "2026-11-09T20:21-03:00",
  "echeqAvalado": [
   {
    "plazo": "31 a 60 días",
@@ -67,17 +67,17 @@
      ]
     },
     "NoGarantizado": {
-     "tasa": 26.0,
+     "tasa": 26.12,
      "operaciones": 27,
-     "monto": 878654896,
+     "monto": 926202920,
      "min": 21.0,
      "max": 60.0,
      "tramos": [
       {
        "plazo": "hasta 30 días",
-       "tasa": 23.12,
+       "tasa": 23.47,
        "operaciones": 11,
-       "monto": 653984972
+       "monto": 701532996
       },
       {
        "plazo": "31 a 60 días",
@@ -170,7 +170,7 @@
  "corte": "cierre",
  "cortes": {
   "cierre": {
-   "hora": "15:37",
+   "hora": "20:21",
    "segmentos": {
     "cheque": {
      "$": {
@@ -211,17 +211,17 @@
        ]
       },
       "NoGarantizado": {
-       "tasa": 26.0,
+       "tasa": 26.12,
        "operaciones": 27,
-       "monto": 878654896,
+       "monto": 926202920,
        "min": 21.0,
        "max": 60.0,
        "tramos": [
         {
          "plazo": "hasta 30 días",
-         "tasa": 23.12,
+         "tasa": 23.47,
          "operaciones": 11,
-         "monto": 653984972
+         "monto": 701532996
         },
         {
          "plazo": "31 a 60 días",
