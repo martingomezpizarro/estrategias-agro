@@ -1,107 +1,199 @@
 {
  "fuente": "MAV, Datos de Mercado (mav-sa.com.ar)",
- "fecha": "2026-11-06",
- "actualizado": "2026-11-10T21:41-03:00",
+ "fecha": "2026-11-11",
+ "actualizado": "2026-11-11T18:12-03:00",
  "echeqAvalado": [
+  {
+   "plazo": "hasta 30 días",
+   "desde": 0,
+   "hasta": 30,
+   "tasa": 24.41,
+   "operaciones": 25,
+   "monto": 2391753210
+  },
   {
    "plazo": "31 a 60 días",
    "desde": 31,
    "hasta": 60,
-   "tasa": 26.14,
-   "operaciones": 2,
-   "monto": 33760419
+   "tasa": 24.64,
+   "operaciones": 30,
+   "monto": 3408901729
   },
   {
    "plazo": "61 a 90 días",
    "desde": 61,
    "hasta": 90,
-   "tasa": 27.66,
-   "operaciones": 3,
-   "monto": 14197359
+   "tasa": 25.45,
+   "operaciones": 29,
+   "monto": 5288574799
+  },
+  {
+   "plazo": "91 a 120 días",
+   "desde": 91,
+   "hasta": 120,
+   "tasa": 26.54,
+   "operaciones": 29,
+   "monto": 2868305917
+  },
+  {
+   "plazo": "121 a 180 días",
+   "desde": 121,
+   "hasta": 180,
+   "tasa": 27.61,
+   "operaciones": 44,
+   "monto": 3297264194
+  },
+  {
+   "plazo": "181 a 365 días",
+   "desde": 181,
+   "hasta": 400,
+   "tasa": 28.8,
+   "operaciones": 22,
+   "monto": 1206241439
   }
  ],
  "pagareUsdAvalado": {
-  "tasa": 6.93,
-  "operaciones": 7,
-  "monto": 227288,
-  "min": 6.5,
+  "tasa": 6.75,
+  "operaciones": 25,
+  "monto": 1270627,
+  "min": 5.0,
   "max": 8.0
  },
  "segmentos": {
   "cheque": {
    "$": {
     "Avalado": {
-     "tasa": 26.59,
-     "operaciones": 5,
-     "monto": 47957778,
-     "min": 26.0,
-     "max": 28.0,
+     "tasa": 25.94,
+     "operaciones": 179,
+     "monto": 18461041288,
+     "min": 23.25,
+     "max": 35.0,
      "tramos": [
       {
+       "plazo": "hasta 30 días",
+       "tasa": 24.41,
+       "operaciones": 25,
+       "monto": 2391753210
+      },
+      {
        "plazo": "31 a 60 días",
-       "tasa": 26.14,
-       "operaciones": 2,
-       "monto": 33760419
+       "tasa": 24.64,
+       "operaciones": 30,
+       "monto": 3408901729
       },
       {
        "plazo": "61 a 90 días",
-       "tasa": 27.66,
-       "operaciones": 3,
-       "monto": 14197359
+       "tasa": 25.45,
+       "operaciones": 29,
+       "monto": 5288574799
+      },
+      {
+       "plazo": "91 a 120 días",
+       "tasa": 26.54,
+       "operaciones": 29,
+       "monto": 2868305917
+      },
+      {
+       "plazo": "121 a 180 días",
+       "tasa": 27.61,
+       "operaciones": 44,
+       "monto": 3297264194
+      },
+      {
+       "plazo": "181 a 365 días",
+       "tasa": 28.8,
+       "operaciones": 22,
+       "monto": 1206241439
       }
      ]
     },
     "Garantizado": {
-     "tasa": 24.0,
-     "operaciones": 1,
-     "monto": 37667668,
-     "min": 24.0,
-     "max": 24.0,
+     "tasa": 24.91,
+     "operaciones": 52,
+     "monto": 1715654111,
+     "min": 23.5,
+     "max": 28.5,
      "tramos": [
       {
        "plazo": "hasta 30 días",
-       "tasa": 24.0,
+       "tasa": 24.97,
+       "operaciones": 18,
+       "monto": 636715101
+      },
+      {
+       "plazo": "31 a 60 días",
+       "tasa": 24.41,
+       "operaciones": 15,
+       "monto": 626834805
+      },
+      {
+       "plazo": "61 a 90 días",
+       "tasa": 25.43,
+       "operaciones": 15,
+       "monto": 438403370
+      },
+      {
+       "plazo": "91 a 120 días",
+       "tasa": 26.65,
+       "operaciones": 2,
+       "monto": 3956083
+      },
+      {
+       "plazo": "121 a 180 días",
+       "tasa": 27.0,
        "operaciones": 1,
-       "monto": 37667668
+       "monto": 1124405
+      },
+      {
+       "plazo": "181 a 365 días",
+       "tasa": 28.5,
+       "operaciones": 1,
+       "monto": 8620347
       }
      ]
     },
     "NoGarantizado": {
-     "tasa": 26.12,
-     "operaciones": 27,
-     "monto": 926202920,
-     "min": 21.0,
-     "max": 60.0,
+     "tasa": 32.71,
+     "operaciones": 242,
+     "monto": 31918402066,
+     "min": 25.0,
+     "max": 75.0,
      "tramos": [
       {
        "plazo": "hasta 30 días",
-       "tasa": 23.47,
-       "operaciones": 11,
-       "monto": 701532996
+       "tasa": 32.42,
+       "operaciones": 43,
+       "monto": 12160033758
       },
       {
        "plazo": "31 a 60 días",
-       "tasa": 33.6,
-       "operaciones": 8,
-       "monto": 69185633
+       "tasa": 34.12,
+       "operaciones": 51,
+       "monto": 10512068292
       },
       {
        "plazo": "61 a 90 días",
-       "tasa": 36.69,
-       "operaciones": 5,
-       "monto": 94123065
+       "tasa": 32.89,
+       "operaciones": 49,
+       "monto": 3615893146
       },
       {
        "plazo": "91 a 120 días",
-       "tasa": 38.0,
-       "operaciones": 1,
-       "monto": 7032501
+       "tasa": 30.05,
+       "operaciones": 41,
+       "monto": 4566970632
       },
       {
        "plazo": "121 a 180 días",
-       "tasa": 30.86,
-       "operaciones": 2,
-       "monto": 54328725
+       "tasa": 33.07,
+       "operaciones": 43,
+       "monto": 903273160
+      },
+      {
+       "plazo": "181 a 365 días",
+       "tasa": 31.29,
+       "operaciones": 15,
+       "monto": 160163078
       }
      ]
     }
@@ -110,56 +202,127 @@
   "pagare": {
    "USD": {
     "Avalado": {
-     "tasa": 6.93,
-     "operaciones": 7,
-     "monto": 227288,
-     "min": 6.5,
+     "tasa": 6.75,
+     "operaciones": 25,
+     "monto": 1270627,
+     "min": 5.0,
      "max": 8.0,
      "tramos": [
       {
        "plazo": "31 a 60 días",
-       "tasa": 8.0,
-       "operaciones": 1,
-       "monto": 34718
+       "tasa": 6.5,
+       "operaciones": 2,
+       "monto": 379052
+      },
+      {
+       "plazo": "61 a 90 días",
+       "tasa": 6.47,
+       "operaciones": 2,
+       "monto": 170759
       },
       {
        "plazo": "121 a 180 días",
-       "tasa": 6.5,
-       "operaciones": 2,
-       "monto": 145815
+       "tasa": 7.3,
+       "operaciones": 10,
+       "monto": 313898
       },
       {
        "plazo": "181 a 365 días",
-       "tasa": 7.5,
-       "operaciones": 4,
-       "monto": 46755
+       "tasa": 6.69,
+       "operaciones": 11,
+       "monto": 406919
       }
      ]
     },
     "NoGarantizado": {
-     "tasa": 7.92,
-     "operaciones": 6,
-     "monto": 1575974,
-     "min": 6.0,
-     "max": 12.0,
+     "tasa": 8.8,
+     "operaciones": 50,
+     "monto": 21175207,
+     "min": 0.0,
+     "max": 18.0,
      "tramos": [
       {
        "plazo": "hasta 30 días",
-       "tasa": 6.0,
-       "operaciones": 1,
-       "monto": 534932
+       "tasa": 9.87,
+       "operaciones": 3,
+       "monto": 4581377
+      },
+      {
+       "plazo": "31 a 60 días",
+       "tasa": 8.87,
+       "operaciones": 5,
+       "monto": 815545
       },
       {
        "plazo": "61 a 90 días",
-       "tasa": 12.0,
-       "operaciones": 1,
-       "monto": 495321
+       "tasa": 8.45,
+       "operaciones": 16,
+       "monto": 1987000
+      },
+      {
+       "plazo": "91 a 120 días",
+       "tasa": 10.3,
+       "operaciones": 9,
+       "monto": 392830
+      },
+      {
+       "plazo": "121 a 180 días",
+       "tasa": 9.72,
+       "operaciones": 6,
+       "monto": 1481278
       },
       {
        "plazo": "181 a 365 días",
-       "tasa": 8.5,
+       "tasa": 8.42,
+       "operaciones": 9,
+       "monto": 11357317
+      }
+     ]
+    }
+   },
+   "$": {
+    "NoGarantizado": {
+     "tasa": 28.81,
+     "operaciones": 88,
+     "monto": 105047261248,
+     "min": 21.0,
+     "max": 60.0,
+     "tramos": [
+      {
+       "plazo": "hasta 30 días",
+       "tasa": 28.07,
+       "operaciones": 20,
+       "monto": 62616944541
+      },
+      {
+       "plazo": "31 a 60 días",
+       "tasa": 28.95,
+       "operaciones": 16,
+       "monto": 31754069436
+      },
+      {
+       "plazo": "61 a 90 días",
+       "tasa": 34.75,
+       "operaciones": 9,
+       "monto": 4914325298
+      },
+      {
+       "plazo": "91 a 120 días",
+       "tasa": 30.79,
+       "operaciones": 8,
+       "monto": 5397744375
+      },
+      {
+       "plazo": "121 a 180 días",
+       "tasa": 31.52,
+       "operaciones": 8,
+       "monto": 89648283
+      },
+      {
+       "plazo": "181 a 365 días",
+       "tasa": 30.33,
        "operaciones": 2,
-       "monto": 18451
+       "monto": 81629405
       }
      ]
     }
@@ -170,82 +333,142 @@
  "corte": "cierre",
  "cortes": {
   "cierre": {
-   "hora": "21:41",
+   "hora": "18:12",
    "segmentos": {
     "cheque": {
      "$": {
       "Avalado": {
-       "tasa": 26.59,
-       "operaciones": 5,
-       "monto": 47957778,
-       "min": 26.0,
-       "max": 28.0,
+       "tasa": 25.94,
+       "operaciones": 179,
+       "monto": 18461041288,
+       "min": 23.25,
+       "max": 35.0,
        "tramos": [
         {
+         "plazo": "hasta 30 días",
+         "tasa": 24.41,
+         "operaciones": 25,
+         "monto": 2391753210
+        },
+        {
          "plazo": "31 a 60 días",
-         "tasa": 26.14,
-         "operaciones": 2,
-         "monto": 33760419
+         "tasa": 24.64,
+         "operaciones": 30,
+         "monto": 3408901729
         },
         {
          "plazo": "61 a 90 días",
-         "tasa": 27.66,
-         "operaciones": 3,
-         "monto": 14197359
+         "tasa": 25.45,
+         "operaciones": 29,
+         "monto": 5288574799
+        },
+        {
+         "plazo": "91 a 120 días",
+         "tasa": 26.54,
+         "operaciones": 29,
+         "monto": 2868305917
+        },
+        {
+         "plazo": "121 a 180 días",
+         "tasa": 27.61,
+         "operaciones": 44,
+         "monto": 3297264194
+        },
+        {
+         "plazo": "181 a 365 días",
+         "tasa": 28.8,
+         "operaciones": 22,
+         "monto": 1206241439
         }
        ]
       },
       "Garantizado": {
-       "tasa": 24.0,
-       "operaciones": 1,
-       "monto": 37667668,
-       "min": 24.0,
-       "max": 24.0,
+       "tasa": 24.91,
+       "operaciones": 52,
+       "monto": 1715654111,
+       "min": 23.5,
+       "max": 28.5,
        "tramos": [
         {
          "plazo": "hasta 30 días",
-         "tasa": 24.0,
+         "tasa": 24.97,
+         "operaciones": 18,
+         "monto": 636715101
+        },
+        {
+         "plazo": "31 a 60 días",
+         "tasa": 24.41,
+         "operaciones": 15,
+         "monto": 626834805
+        },
+        {
+         "plazo": "61 a 90 días",
+         "tasa": 25.43,
+         "operaciones": 15,
+         "monto": 438403370
+        },
+        {
+         "plazo": "91 a 120 días",
+         "tasa": 26.65,
+         "operaciones": 2,
+         "monto": 3956083
+        },
+        {
+         "plazo": "121 a 180 días",
+         "tasa": 27.0,
          "operaciones": 1,
-         "monto": 37667668
+         "monto": 1124405
+        },
+        {
+         "plazo": "181 a 365 días",
+         "tasa": 28.5,
+         "operaciones": 1,
+         "monto": 8620347
         }
        ]
       },
       "NoGarantizado": {
-       "tasa": 26.12,
-       "operaciones": 27,
-       "monto": 926202920,
-       "min": 21.0,
-       "max": 60.0,
+       "tasa": 32.71,
+       "operaciones": 242,
+       "monto": 31918402066,
+       "min": 25.0,
+       "max": 75.0,
        "tramos": [
         {
          "plazo": "hasta 30 días",
-         "tasa": 23.47,
-         "operaciones": 11,
-         "monto": 701532996
+         "tasa": 32.42,
+         "operaciones": 43,
+         "monto": 12160033758
         },
         {
          "plazo": "31 a 60 días",
-         "tasa": 33.6,
-         "operaciones": 8,
-         "monto": 69185633
+         "tasa": 34.12,
+         "operaciones": 51,
+         "monto": 10512068292
         },
         {
          "plazo": "61 a 90 días",
-         "tasa": 36.69,
-         "operaciones": 5,
-         "monto": 94123065
+         "tasa": 32.89,
+         "operaciones": 49,
+         "monto": 3615893146
         },
         {
          "plazo": "91 a 120 días",
-         "tasa": 38.0,
-         "operaciones": 1,
-         "monto": 7032501
+         "tasa": 30.05,
+         "operaciones": 41,
+         "monto": 4566970632
         },
         {
          "plazo": "121 a 180 días",
-         "tasa": 30.86,
-         "operaciones": 2,
-         "monto": 54328725
+         "tasa": 33.07,
+         "operaciones": 43,
+         "monto": 903273160
+        },
+        {
+         "plazo": "181 a 365 días",
+         "tasa": 31.29,
+         "operaciones": 15,
+         "monto": 160163078
         }
        ]
       }
@@ -254,56 +477,127 @@
     "pagare": {
      "USD": {
       "Avalado": {
-       "tasa": 6.93,
-       "operaciones": 7,
-       "monto": 227288,
-       "min": 6.5,
+       "tasa": 6.75,
+       "operaciones": 25,
+       "monto": 1270627,
+       "min": 5.0,
        "max": 8.0,
        "tramos": [
         {
          "plazo": "31 a 60 días",
-         "tasa": 8.0,
-         "operaciones": 1,
-         "monto": 34718
+         "tasa": 6.5,
+         "operaciones": 2,
+         "monto": 379052
+        },
+        {
+         "plazo": "61 a 90 días",
+         "tasa": 6.47,
+         "operaciones": 2,
+         "monto": 170759
         },
         {
          "plazo": "121 a 180 días",
-         "tasa": 6.5,
-         "operaciones": 2,
-         "monto": 145815
+         "tasa": 7.3,
+         "operaciones": 10,
+         "monto": 313898
         },
         {
          "plazo": "181 a 365 días",
-         "tasa": 7.5,
-         "operaciones": 4,
-         "monto": 46755
+         "tasa": 6.69,
+         "operaciones": 11,
+         "monto": 406919
         }
        ]
       },
       "NoGarantizado": {
-       "tasa": 7.92,
-       "operaciones": 6,
-       "monto": 1575974,
-       "min": 6.0,
-       "max": 12.0,
+       "tasa": 8.8,
+       "operaciones": 50,
+       "monto": 21175207,
+       "min": 0.0,
+       "max": 18.0,
        "tramos": [
         {
          "plazo": "hasta 30 días",
-         "tasa": 6.0,
-         "operaciones": 1,
-         "monto": 534932
+         "tasa": 9.87,
+         "operaciones": 3,
+         "monto": 4581377
+        },
+        {
+         "plazo": "31 a 60 días",
+         "tasa": 8.87,
+         "operaciones": 5,
+         "monto": 815545
         },
         {
          "plazo": "61 a 90 días",
-         "tasa": 12.0,
-         "operaciones": 1,
-         "monto": 495321
+         "tasa": 8.45,
+         "operaciones": 16,
+         "monto": 1987000
+        },
+        {
+         "plazo": "91 a 120 días",
+         "tasa": 10.3,
+         "operaciones": 9,
+         "monto": 392830
+        },
+        {
+         "plazo": "121 a 180 días",
+         "tasa": 9.72,
+         "operaciones": 6,
+         "monto": 1481278
         },
         {
          "plazo": "181 a 365 días",
-         "tasa": 8.5,
+         "tasa": 8.42,
+         "operaciones": 9,
+         "monto": 11357317
+        }
+       ]
+      }
+     },
+     "$": {
+      "NoGarantizado": {
+       "tasa": 28.81,
+       "operaciones": 88,
+       "monto": 105047261248,
+       "min": 21.0,
+       "max": 60.0,
+       "tramos": [
+        {
+         "plazo": "hasta 30 días",
+         "tasa": 28.07,
+         "operaciones": 20,
+         "monto": 62616944541
+        },
+        {
+         "plazo": "31 a 60 días",
+         "tasa": 28.95,
+         "operaciones": 16,
+         "monto": 31754069436
+        },
+        {
+         "plazo": "61 a 90 días",
+         "tasa": 34.75,
+         "operaciones": 9,
+         "monto": 4914325298
+        },
+        {
+         "plazo": "91 a 120 días",
+         "tasa": 30.79,
+         "operaciones": 8,
+         "monto": 5397744375
+        },
+        {
+         "plazo": "121 a 180 días",
+         "tasa": 31.52,
+         "operaciones": 8,
+         "monto": 89648283
+        },
+        {
+         "plazo": "181 a 365 días",
+         "tasa": 30.33,
          "operaciones": 2,
-         "monto": 18451
+         "monto": 81629405
         }
        ]
       }
