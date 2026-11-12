@@ -2,9 +2,21 @@
  "fuente": "Cámara Arbitral de Cereales, Bolsa de Comercio de Rosario (precios pizarra)",
  "url": "https://www.bcr.com.ar/es/mercados/mercado-de-granos/cotizaciones/cotizaciones-locales-0",
  "nota": "Pesos por tonelada. Promedio ponderado de operaciones del mercado físico de Rosario. En dólares, al A3500 del BCRA de cada fecha.",
- "actualizado": "2026-11-11T18:12-03:00",
+ "actualizado": "2026-11-12T18:23-03:00",
  "granos": {
   "soja": [
+   {
+    "fecha": "2026-11-11",
+    "ars": 545000.0,
+    "a3500": 1547.9128,
+    "usd": 352.1
+   },
+   {
+    "fecha": "2026-11-10",
+    "ars": 540000.0,
+    "a3500": null,
+    "usd": null
+   },
    {
     "fecha": "2026-11-06",
     "ars": 535000.0,
@@ -22,21 +34,21 @@
     "ars": 540000.0,
     "a3500": 1548.4941,
     "usd": 348.7
-   },
-   {
-    "fecha": "2026-11-03",
-    "ars": 540500.0,
-    "a3500": 1549.7194,
-    "usd": 348.8
-   },
-   {
-    "fecha": "2026-11-02",
-    "ars": 542000.0,
-    "a3500": 1544.6507,
-    "usd": 350.9
    }
   ],
   "sorgo": [
+   {
+    "fecha": "2026-11-11",
+    "ars": null,
+    "a3500": 1547.9128,
+    "usd": null
+   },
+   {
+    "fecha": "2026-11-10",
+    "ars": null,
+    "a3500": null,
+    "usd": null
+   },
    {
     "fecha": "2026-11-06",
     "ars": null,
@@ -53,23 +65,23 @@
     "fecha": "2026-11-04",
     "ars": null,
     "a3500": 1548.4941,
-    "usd": null
-   },
-   {
-    "fecha": "2026-11-03",
-    "ars": null,
-    "a3500": 1549.7194,
-    "usd": null
-   },
-   {
-    "fecha": "2026-11-02",
-    "ars": null,
-    "a3500": 1544.6507,
     "usd": null
    }
   ],
   "girasol": [
    {
+    "fecha": "2026-11-11",
+    "ars": null,
+    "a3500": 1547.9128,
+    "usd": null
+   },
+   {
+    "fecha": "2026-11-10",
+    "ars": null,
+    "a3500": null,
+    "usd": null
+   },
+   {
     "fecha": "2026-11-06",
     "ars": null,
     "a3500": null,
@@ -86,21 +98,21 @@
     "ars": null,
     "a3500": 1548.4941,
     "usd": null
-   },
-   {
-    "fecha": "2026-11-03",
-    "ars": null,
-    "a3500": 1549.7194,
-    "usd": null
-   },
-   {
-    "fecha": "2026-11-02",
-    "ars": null,
-    "a3500": 1544.6507,
-    "usd": null
    }
   ],
   "trigo": [
+   {
+    "fecha": "2026-11-11",
+    "ars": 299500.0,
+    "a3500": 1547.9128,
+    "usd": 193.5
+   },
+   {
+    "fecha": "2026-11-10",
+    "ars": 299620.0,
+    "a3500": null,
+    "usd": null
+   },
    {
     "fecha": "2026-11-06",
     "ars": 313300.0,
@@ -118,21 +130,21 @@
     "ars": 315100.0,
     "a3500": 1548.4941,
     "usd": 203.5
-   },
-   {
-    "fecha": "2026-11-03",
-    "ars": 316000.0,
-    "a3500": 1549.7194,
-    "usd": 203.9
-   },
-   {
-    "fecha": "2026-11-02",
-    "ars": 314980.0,
-    "a3500": 1544.6507,
-    "usd": 203.9
    }
   ],
   "maiz": [
+   {
+    "fecha": "2026-11-11",
+    "ars": 275000.0,
+    "a3500": 1547.9128,
+    "usd": 177.7
+   },
+   {
+    "fecha": "2026-11-10",
+    "ars": 274300.0,
+    "a3500": null,
+    "usd": null
+   },
    {
     "fecha": "2026-11-06",
     "ars": null,
@@ -150,18 +162,6 @@
     "ars": 275500.0,
     "a3500": 1548.4941,
     "usd": 177.9
-   },
-   {
-    "fecha": "2026-11-03",
-    "ars": 272934.0,
-    "a3500": 1549.7194,
-    "usd": 176.1
-   },
-   {
-    "fecha": "2026-11-02",
-    "ars": 275000.0,
-    "a3500": 1544.6507,
-    "usd": 178.0
    }
   ]
  }
