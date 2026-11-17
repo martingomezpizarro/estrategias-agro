@@ -1,8 +1,8 @@
 // Agro y Mercado — funciona sin señal en el stand.
-const CACHE = "agro-v22";
+const CACHE = "agro-v23";
 const CORE = ["./", "index.html", "manifest.webmanifest", "favicon.png", "logo.png", "icon-192.png", "icon-512.png"];
 // El juego y la página de cobertura: se guardan para usarlos sin señal (si alguno falla, no frena la instalación).
-const JUEGO = ["juego/", "juego/juego.css", "juego/juego.js", "juego/ilustraciones.js", "juego/config.js",
+const JUEGO = ["juego/", "juego/juego.css", "juego/juego.js", "juego/ilustraciones.js", "juego/config.js", "juego/preguntas.js",
   "juego/vendor/gsap.min.js", "juego/vendor/confetti.browser.js", "cobertura/"];
 const CDN = [
   "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js",

@@ -35,7 +35,7 @@
     <main>
       <section class="screen card" id="s-intro">
         <div class="hero"><svg id="heroSvg" viewBox="0 0 600 230" aria-hidden="true"></svg></div>
-        <p class="eyebrow">5 preguntas · 20 segundos cada una</p>
+        <p class="eyebrow"><span id="nPreg">5</span> preguntas · 20 segundos cada una</p>
         <h1>El desafío de la cosecha</h1>
         <p>¿Sabés cómo cuidar el precio de tu grano? Respondé rápido, sumá puntos y cosechá el lote entero.<span id="introSorpresa"> Al final hay una sorpresa.</span></p>
         <div class="actions"><button class="btn go block" id="startBtn">¡Jugar!</button></div>
@@ -126,6 +126,7 @@
 <script src="vendor/gsap.min.js"></script>
 <script src="vendor/confetti.browser.js"></script>
 <script src="config.js"></script>
+<script src="preguntas.js"></script>
 <script src="ilustraciones.js"></script>
 <script src="juego.js"></script>
 <script>if("serviceWorker" in navigator&&location.protocol==="https:")addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}));</script>
