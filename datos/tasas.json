@@ -1,7 +1,7 @@
 {
  "fuente": "MAV, Datos de Mercado (mav-sa.com.ar)",
  "fecha": "2026-11-16",
- "actualizado": "2026-11-16T21:36-03:00",
+ "actualizado": "2026-11-16T23:57-03:00",
  "echeqAvalado": [
   {
    "plazo": "hasta 30 días",
@@ -366,7 +366,7 @@
  "corte": "cierre",
  "cortes": {
   "cierre": {
-   "hora": "21:36",
+   "hora": "23:57",
    "segmentos": {
     "cheque": {
      "$": {
