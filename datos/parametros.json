@@ -1,15 +1,15 @@
 {
- "actualizado": "2026-11-17T19:08-03:00",
+ "actualizado": "2026-11-17T23:27-03:00",
  "vol": {
   "soja": {
-   "valor": 15.5,
+   "valor": 15.3,
    "contrato": "Soja mayo 2027 (ZSK27)",
    "fecha": "2026-11-17",
    "ventana": 60,
    "fuente": "CME Group vía Yahoo Finance: volatilidad histórica anualizada de los últimos 60 cierres diarios"
   },
   "maiz": {
-   "valor": 17.8,
+   "valor": 17.4,
    "contrato": "Maíz mayo 2027 (ZCK27)",
    "fecha": "2026-11-17",
    "ventana": 60,
