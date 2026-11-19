@@ -2,9 +2,15 @@
  "fuente": "Cámara Arbitral de Cereales, Bolsa de Comercio de Rosario (precios pizarra)",
  "url": "https://www.bcr.com.ar/es/mercados/mercado-de-granos/cotizaciones/cotizaciones-locales-0",
  "nota": "Pesos por tonelada. Promedio ponderado de operaciones del mercado físico de Rosario. En dólares, al A3500 del BCRA de cada fecha.",
- "actualizado": "2026-11-18T18:46-03:00",
+ "actualizado": "2026-11-19T19:03-03:00",
  "granos": {
   "soja": [
+   {
+    "fecha": "2026-11-18",
+    "ars": 550000.0,
+    "a3500": 1558.2427,
+    "usd": 353.0
+   },
    {
     "fecha": "2026-11-17",
     "ars": 550000.0,
@@ -28,15 +34,15 @@
     "ars": 540000.0,
     "a3500": 1544.432,
     "usd": 349.6
-   },
-   {
-    "fecha": "2026-11-11",
-    "ars": 545000.0,
-    "a3500": 1547.9128,
-    "usd": 352.1
    }
   ],
   "sorgo": [
+   {
+    "fecha": "2026-11-18",
+    "ars": null,
+    "a3500": 1558.2427,
+    "usd": null
+   },
    {
     "fecha": "2026-11-17",
     "ars": null,
@@ -59,17 +65,17 @@
     "fecha": "2026-11-12",
     "ars": null,
     "a3500": 1544.432,
-    "usd": null
-   },
-   {
-    "fecha": "2026-11-11",
-    "ars": null,
-    "a3500": 1547.9128,
     "usd": null
    }
   ],
   "girasol": [
    {
+    "fecha": "2026-11-18",
+    "ars": null,
+    "a3500": 1558.2427,
+    "usd": null
+   },
+   {
     "fecha": "2026-11-17",
     "ars": null,
     "a3500": 1552.2627,
@@ -92,15 +98,15 @@
     "ars": null,
     "a3500": 1544.432,
     "usd": null
-   },
-   {
-    "fecha": "2026-11-11",
-    "ars": null,
-    "a3500": 1547.9128,
-    "usd": null
    }
   ],
   "trigo": [
+   {
+    "fecha": "2026-11-18",
+    "ars": 286850.0,
+    "a3500": 1558.2427,
+    "usd": 184.1
+   },
    {
     "fecha": "2026-11-17",
     "ars": 285455.0,
@@ -124,15 +130,15 @@
     "ars": 288900.0,
     "a3500": 1544.432,
     "usd": 187.1
-   },
-   {
-    "fecha": "2026-11-11",
-    "ars": 299500.0,
-    "a3500": 1547.9128,
-    "usd": 193.5
    }
   ],
   "maiz": [
+   {
+    "fecha": "2026-11-18",
+    "ars": 271000.0,
+    "a3500": 1558.2427,
+    "usd": 173.9
+   },
    {
     "fecha": "2026-11-17",
     "ars": 268500.0,
@@ -156,12 +162,6 @@
     "ars": 275800.0,
     "a3500": 1544.432,
     "usd": 178.6
-   },
-   {
-    "fecha": "2026-11-11",
-    "ars": 275000.0,
-    "a3500": 1547.9128,
-    "usd": 177.7
    }
   ]
  }
