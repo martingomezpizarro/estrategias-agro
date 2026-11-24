@@ -1,23 +1,23 @@
 {
  "fuente": "MAV, Datos de Mercado (mav-sa.com.ar)",
  "fecha": "2026-11-20",
- "actualizado": "2026-11-20T22:32-03:00",
+ "actualizado": "2026-11-23T22:35-03:00",
  "echeqAvalado": [
   {
    "plazo": "hasta 30 días",
    "desde": 0,
    "hasta": 30,
-   "tasa": 24.26,
+   "tasa": 24.24,
    "operaciones": 24,
-   "monto": 1130253578
+   "monto": 1138929410
   },
   {
    "plazo": "31 a 60 días",
    "desde": 31,
    "hasta": 60,
-   "tasa": 24.44,
+   "tasa": 24.43,
    "operaciones": 30,
-   "monto": 4681335546
+   "monto": 4706020945
   },
   {
    "plazo": "61 a 90 días",
@@ -25,7 +25,7 @@
    "hasta": 90,
    "tasa": 24.97,
    "operaciones": 30,
-   "monto": 3608269981
+   "monto": 3612076653
   },
   {
    "plazo": "91 a 120 días",
@@ -63,29 +63,29 @@
   "cheque": {
    "$": {
     "Avalado": {
-     "tasa": 25.35,
+     "tasa": 25.34,
      "operaciones": 187,
-     "monto": 14790698900,
+     "monto": 14827866803,
      "min": 23.0,
      "max": 33.0,
      "tramos": [
       {
        "plazo": "hasta 30 días",
-       "tasa": 24.26,
+       "tasa": 24.24,
        "operaciones": 24,
-       "monto": 1130253578
+       "monto": 1138929410
       },
       {
        "plazo": "31 a 60 días",
-       "tasa": 24.44,
+       "tasa": 24.43,
        "operaciones": 30,
-       "monto": 4681335546
+       "monto": 4706020945
       },
       {
        "plazo": "61 a 90 días",
        "tasa": 24.97,
        "operaciones": 30,
-       "monto": 3608269981
+       "monto": 3612076653
       },
       {
        "plazo": "91 a 120 días",
@@ -147,9 +147,9 @@
      ]
     },
     "NoGarantizado": {
-     "tasa": 33.65,
-     "operaciones": 214,
-     "monto": 40997785272,
+     "tasa": 33.66,
+     "operaciones": 215,
+     "monto": 41087195814,
      "min": 24.5,
      "max": 86.5,
      "tramos": [
@@ -161,9 +161,9 @@
       },
       {
        "plazo": "31 a 60 días",
-       "tasa": 34.14,
+       "tasa": 34.16,
        "operaciones": 50,
-       "monto": 17293828600
+       "monto": 17364338457
       },
       {
        "plazo": "61 a 90 días",
@@ -173,9 +173,9 @@
       },
       {
        "plazo": "91 a 120 días",
-       "tasa": 36.09,
-       "operaciones": 26,
-       "monto": 804761100
+       "tasa": 36.06,
+       "operaciones": 27,
+       "monto": 823661784
       },
       {
        "plazo": "121 a 180 días",
@@ -354,34 +354,34 @@
  "corte": "cierre",
  "cortes": {
   "cierre": {
-   "hora": "22:32",
+   "hora": "22:35",
    "segmentos": {
     "cheque": {
      "$": {
       "Avalado": {
-       "tasa": 25.35,
+       "tasa": 25.34,
        "operaciones": 187,
-       "monto": 14790698900,
+       "monto": 14827866803,
        "min": 23.0,
        "max": 33.0,
        "tramos": [
         {
          "plazo": "hasta 30 días",
-         "tasa": 24.26,
+         "tasa": 24.24,
          "operaciones": 24,
-         "monto": 1130253578
+         "monto": 1138929410
         },
         {
          "plazo": "31 a 60 días",
-         "tasa": 24.44,
+         "tasa": 24.43,
          "operaciones": 30,
-         "monto": 4681335546
+         "monto": 4706020945
         },
         {
          "plazo": "61 a 90 días",
          "tasa": 24.97,
          "operaciones": 30,
-         "monto": 3608269981
+         "monto": 3612076653
         },
         {
          "plazo": "91 a 120 días",
@@ -443,9 +443,9 @@
        ]
       },
       "NoGarantizado": {
-       "tasa": 33.65,
-       "operaciones": 214,
-       "monto": 40997785272,
+       "tasa": 33.66,
+       "operaciones": 215,
+       "monto": 41087195814,
        "min": 24.5,
        "max": 86.5,
        "tramos": [
@@ -457,9 +457,9 @@
         },
         {
          "plazo": "31 a 60 días",
-         "tasa": 34.14,
+         "tasa": 34.16,
          "operaciones": 50,
-         "monto": 17293828600
+         "monto": 17364338457
         },
         {
          "plazo": "61 a 90 días",
@@ -469,9 +469,9 @@
         },
         {
          "plazo": "91 a 120 días",
-         "tasa": 36.09,
-         "operaciones": 26,
-         "monto": 804761100
+         "tasa": 36.06,
+         "operaciones": 27,
+         "monto": 823661784
         },
         {
          "plazo": "121 a 180 días",
