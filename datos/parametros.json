@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-23T22:35-03:00",
+ "actualizado": "2026-11-24T00:07-03:00",
  "vol": {
   "soja": {
    "valor": 14.7,
@@ -16,7 +16,7 @@
    "fuente": "CME Group vía Yahoo Finance: volatilidad histórica anualizada de los últimos 60 cierres diarios"
   },
   "trigo": {
-   "valor": 21.3,
+   "valor": 21.4,
    "contrato": "Trigo marzo 2027 (ZWH27)",
    "fecha": "2026-11-23",
    "ventana": 60,
