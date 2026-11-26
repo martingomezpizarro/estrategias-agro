@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-25T20:00-03:00",
+ "actualizado": "2026-11-26T19:54-03:00",
  "vol": {
   "soja": {
    "valor": 14.1,
@@ -24,7 +24,7 @@
   }
  },
  "r": {
-  "valor": 4.15,
+  "valor": 4.16,
   "fecha": "2026-11-25",
   "fuente": "Rendimiento de las letras del Tesoro de EE.UU. a 13 semanas (^IRX, CBOE vía Yahoo Finance)"
  }
